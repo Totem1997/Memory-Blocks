@@ -1,0 +1,6 @@
+{
+  "name": "Memory Blocks",
+  "description": "A personalized playable puzzle gift turning your favorite photo into an 8x8 block puzzle game.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
