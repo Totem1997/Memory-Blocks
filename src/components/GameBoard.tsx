@@ -82,6 +82,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   // DOM Refs & Drag state
   const boardRef = useRef<HTMLDivElement>(null);
   const trayRef = useRef<HTMLDivElement>(null);
+  const dragStartX = useRef<number>(0);
   const dragStartY = useRef<number>(0);
   const dragTouchBaseOffset = useRef<number>(0);
   const isTouchPointer = useRef<boolean>(false);
@@ -292,6 +293,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
     const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
     isTouchPointer.current = isTouch;
+    dragStartX.current = e.clientX;
     dragStartY.current = e.clientY;
 
     // Base offset: immediately lift piece above the finger so thumb doesn't obscure blocks or cells.
@@ -311,19 +313,27 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     if (activeDragIndex === null) return;
     e.preventDefault();
 
-    const currentX = e.clientX;
+    const currentRawX = e.clientX;
     const currentRawY = e.clientY;
 
-    // Progressive upward reach amplification (Block Blast mechanic):
+    // 1. Progressive upward reach amplification (Block Blast vertical mechanic):
     // As the player drags upward from the tray toward the board, smoothly expand the distance
     // between finger touch point and the floating piece. This allows the player's thumb to remain
     // comfortably in the bottom portion of the screen while effortlessly reaching the top rows of the board.
     const deltaUp = Math.max(0, dragStartY.current - currentRawY);
-    const progressiveFactor = isTouchPointer.current ? 0.8 : 0.45;
-    const progressiveBoost = deltaUp * progressiveFactor;
-    const effectiveOffset = dragTouchBaseOffset.current + progressiveBoost;
+    const vProgressiveFactor = isTouchPointer.current ? 0.8 : 0.45;
+    const vProgressiveBoost = deltaUp * vProgressiveFactor;
+    const effectiveVOffset = dragTouchBaseOffset.current + vProgressiveBoost;
+    const currentY = currentRawY - effectiveVOffset;
 
-    const currentY = currentRawY - effectiveOffset;
+    // 2. Dynamic horizontal reach amplification (Block Blast horizontal mechanic):
+    // As the player drags left or right from where they picked up the piece,
+    // expand the distance horizontally so the thumb doesn't have to reach the extreme
+    // left and right physical edges of the mobile screen to place pieces in column 0 or 7.
+    const deltaX = currentRawX - dragStartX.current;
+    const hProgressiveFactor = isTouchPointer.current ? 0.35 : 0.18;
+    const currentX = currentRawX + deltaX * hProgressiveFactor;
+
     setDragPointerPos({ x: currentX, y: currentY });
 
     if (!boardRef.current) return;
@@ -335,17 +345,41 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     const cellSize = boardRect.width / 8;
 
     // Calculate snapped grid cell for the piece's top-left corner
-    // Center the piece around the effective floating pointer
-    const pieceWidthPx = currentPiece.width * cellSize;
-    const pieceHeightPx = currentPiece.height * cellSize;
+    // Center of floating piece in board cell units (no rightward bias)
+    const pieceCenterColFloat = (currentX - boardRect.left) / cellSize;
+    const pieceCenterRowFloat = (currentY - boardRect.top) / cellSize;
 
-    const snappedLeft = currentX - boardRect.left - pieceWidthPx / 2 + cellSize / 2;
-    const snappedTop = currentY - boardRect.top - pieceHeightPx / 2 + cellSize / 2;
+    const targetCol = Math.round(pieceCenterColFloat - currentPiece.width / 2);
+    const targetRow = Math.round(pieceCenterRowFloat - currentPiece.height / 2);
 
-    const targetCol = Math.round(snappedLeft / cellSize);
-    const targetRow = Math.round(snappedTop / cellSize);
+    let bestRow = targetRow;
+    let bestCol = targetCol;
+    let isValid = canPlacePiece(board, currentPiece, targetRow, targetCol);
 
-    const isValid = canPlacePiece(board, currentPiece, targetRow, targetCol);
+    // Magnetic Proximity Snapping:
+    // If the exact coordinate isn't valid, check adjacent positions within ~1.35 cell radius
+    // for a valid placement closest to the hover position, preventing stubborn snapping fails.
+    if (!isValid) {
+      let minDistance = 1.35;
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = targetRow + dr;
+          const nc = targetCol + dc;
+          if (canPlacePiece(board, currentPiece, nr, nc)) {
+            const centerR = nr + currentPiece.height / 2;
+            const centerC = nc + currentPiece.width / 2;
+            const dist = Math.hypot(pieceCenterRowFloat - centerR, pieceCenterColFloat - centerC);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestRow = nr;
+              bestCol = nc;
+              isValid = true;
+            }
+          }
+        }
+      }
+    }
 
     // Calculate lines that would be completed if dropped here
     let previewLines = { rows: [] as number[], cols: [] as number[] };
@@ -354,7 +388,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       for (let r = 0; r < currentPiece.height; r++) {
         for (let c = 0; c < currentPiece.width; c++) {
           if (currentPiece.shape[r][c] === 1) {
-            simBoard[targetRow + r][targetCol + c] = {
+            simBoard[bestRow + r][bestCol + c] = {
               color: currentPiece.color,
               colorName: currentPiece.colorName,
               id: 'sim',
@@ -382,8 +416,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     }
 
     setDragGhost({
-      row: targetRow,
-      col: targetCol,
+      row: bestRow,
+      col: bestCol,
       isValid,
       previewLines,
     });
@@ -440,7 +474,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   return (
     <div
       id="game-board-container"
-      className="relative flex flex-col justify-between items-center w-full min-h-screen px-4 py-4 sm:py-6 max-w-md mx-auto select-none overflow-hidden touch-none"
+      className="relative flex flex-col justify-between items-center w-full min-h-[100dvh] px-3 sm:px-4 pt-1.5 pb-6 sm:pb-8 max-w-md mx-auto select-none overflow-hidden touch-none"
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
@@ -529,8 +563,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         )}
       </AnimatePresence>
 
-      {/* MAIN 8x8 BOARD (Exact visual match to reference image) */}
-      <div className="relative my-auto flex flex-col items-center justify-center w-full">
+      {/* MAIN PLAY AREA (Board + Floating Pieces directly below) */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full my-auto gap-2.5 sm:gap-4">
         {/* Outer warm bezel container */}
         <div
           id="game-board-bezel"
@@ -654,67 +688,67 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             </div>
           </div>
         </div>
-      </div>
 
-      {/* UPCOMING PIECES TRAY (Section 19 & UI Reference exact layout) */}
-      <div
-        ref={trayRef}
-        id="piece-tray"
-        className="w-full max-w-[370px] sm:max-w-[400px] h-32 sm:h-36 rounded-3xl bg-[#F4EBE0] border border-[#E8DFC8] shadow-xs px-3 py-2 flex items-center justify-around select-none touch-none mb-1"
-      >
-        {trayPieces.map((piece, pIdx) => {
-          if (!piece) {
+        {/* DRAGGABLE PIECES (Moved closer to board, no enclosing box) */}
+        <div
+          ref={trayRef}
+          id="piece-tray"
+          className="w-full max-w-[370px] sm:max-w-[400px] h-24 sm:h-28 grid grid-cols-3 gap-2 px-1 select-none touch-none"
+        >
+          {trayPieces.map((piece, pIdx) => {
+            if (!piece) {
+              return (
+                <div
+                  key={`empty-slot-${pIdx}`}
+                  className="w-full h-full flex items-center justify-center opacity-0 pointer-events-none"
+                />
+              );
+            }
+
+            // If this piece is currently being dragged, keep slot empty or dimmed
+            const isDragging = activeDragIndex === pIdx;
+
             return (
               <div
-                key={`empty-slot-${pIdx}`}
-                className="w-24 h-24 flex items-center justify-center opacity-0"
-              />
-            );
-          }
-
-          // If this piece is currently being dragged, keep slot empty or dimmed
-          const isDragging = activeDragIndex === pIdx;
-
-          return (
-            <div
-              key={piece.id}
-              id={`tray-piece-${pIdx}`}
-              onPointerDown={(e) => handlePiecePointerDown(e, piece, pIdx)}
-              className={`relative flex items-center justify-center p-2 rounded-2xl cursor-grab active:cursor-grabbing transition-opacity duration-150
-                ${isDragging ? 'opacity-20' : 'opacity-100 hover:scale-105'}
-              `}
-              style={{
-                touchAction: 'none',
-              }}
-            >
-              {/* Piece shape grid representation in tray */}
-              <div
-                className="grid gap-1"
+                key={piece.id}
+                id={`tray-piece-${pIdx}`}
+                onPointerDown={(e) => handlePiecePointerDown(e, piece, pIdx)}
+                className={`relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing transition-all duration-150 select-none touch-none
+                  ${isDragging ? 'opacity-20' : 'opacity-100 hover:scale-105 active:scale-95'}
+                `}
                 style={{
-                  gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
-                  gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
+                  touchAction: 'none',
                 }}
               >
-                {piece.shape.map((row, r) =>
-                  row.map((val, c) => (
-                    <div
-                      key={`${r}-${c}`}
-                      className={`w-5 h-5 sm:w-6 sm:h-6 rounded-[5px] ${
-                        val === 1 ? 'block-tile' : 'opacity-0'
-                      }`}
-                      style={{
-                        background:
-                          val === 1
-                            ? PIECE_COLORS[piece.colorName as keyof typeof PIECE_COLORS]?.gradient || piece.color
-                            : 'transparent',
-                      }}
-                    />
-                  ))
-                )}
+                {/* Piece shape grid representation */}
+                <div
+                  className="grid gap-1 pointer-events-none"
+                  style={{
+                    gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
+                    gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
+                  }}
+                >
+                  {piece.shape.map((row, r) =>
+                    row.map((val, c) => (
+                      <div
+                        key={`${r}-${c}`}
+                        className={`w-5 h-5 sm:w-6 sm:h-6 rounded-[5px] ${
+                          val === 1 ? 'block-tile' : 'opacity-0'
+                        }`}
+                        style={{
+                          background:
+                            val === 1
+                              ? PIECE_COLORS[piece.colorName as keyof typeof PIECE_COLORS]?.gradient || piece.color
+                              : 'transparent',
+                        }}
+                      />
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* FLOATING DRAGGED PIECE FOLLOWING POINTER (Mobile Touch Smooth UX & Progressive Reach) */}
