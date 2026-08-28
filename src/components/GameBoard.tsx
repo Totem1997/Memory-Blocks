@@ -79,10 +79,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     previewLines: { rows: number[]; cols: number[] };
   } | null>(null);
 
-  // DOM Refs
+  // DOM Refs & Drag state
   const boardRef = useRef<HTMLDivElement>(null);
   const trayRef = useRef<HTMLDivElement>(null);
-  const dragTouchOffset = useRef<number>(0);
+  const dragStartY = useRef<number>(0);
+  const dragTouchBaseOffset = useRef<number>(0);
+  const isTouchPointer = useRef<boolean>(false);
 
   // Load persistent best score on mount
   useEffect(() => {
@@ -274,7 +276,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [board, trayPieces, isGameOver]);
 
-  // Pointer / Touch Drag Handler
+  // Pointer / Touch Drag Handler (Ergonomic Block Blast progressive offset & reach)
   const handlePiecePointerDown = (
     e: React.PointerEvent,
     piece: Piece,
@@ -288,15 +290,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
     playPickupSound();
 
-    // Determine vertical offset for mobile touch:
-    // If touch event, offset piece ~65px ABOVE finger so thumb doesn't cover cells!
-    const isTouch = e.pointerType === 'touch';
-    dragTouchOffset.current = isTouch ? 72 : 0;
+    const isTouch = e.pointerType === 'touch' || e.pointerType === 'pen';
+    isTouchPointer.current = isTouch;
+    dragStartY.current = e.clientY;
+
+    // Base offset: immediately lift piece above the finger so thumb doesn't obscure blocks or cells.
+    // Provide slight extra clearance for taller pieces so the bottom row remains fully visible.
+    const heightClearance = Math.max(0, (piece.height - 1) * 8);
+    const baseOffset = (isTouch ? 80 : 45) + heightClearance;
+    dragTouchBaseOffset.current = baseOffset;
 
     setActiveDragIndex(pieceIndex);
     setDragPointerPos({
       x: e.clientX,
-      y: e.clientY - dragTouchOffset.current,
+      y: e.clientY - baseOffset,
     });
   };
 
@@ -305,7 +312,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     e.preventDefault();
 
     const currentX = e.clientX;
-    const currentY = e.clientY - dragTouchOffset.current;
+    const currentRawY = e.clientY;
+
+    // Progressive upward reach amplification (Block Blast mechanic):
+    // As the player drags upward from the tray toward the board, smoothly expand the distance
+    // between finger touch point and the floating piece. This allows the player's thumb to remain
+    // comfortably in the bottom portion of the screen while effortlessly reaching the top rows of the board.
+    const deltaUp = Math.max(0, dragStartY.current - currentRawY);
+    const progressiveFactor = isTouchPointer.current ? 0.8 : 0.45;
+    const progressiveBoost = deltaUp * progressiveFactor;
+    const effectiveOffset = dragTouchBaseOffset.current + progressiveBoost;
+
+    const currentY = currentRawY - effectiveOffset;
     setDragPointerPos({ x: currentX, y: currentY });
 
     if (!boardRef.current) return;
@@ -317,7 +335,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     const cellSize = boardRect.width / 8;
 
     // Calculate snapped grid cell for the piece's top-left corner
-    // Center the piece around the pointer
+    // Center the piece around the effective floating pointer
     const pieceWidthPx = currentPiece.width * cellSize;
     const pieceHeightPx = currentPiece.height * cellSize;
 
@@ -699,7 +717,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         })}
       </div>
 
-      {/* FLOATING DRAGGED PIECE FOLLOWING POINTER (Mobile Touch Smooth UX) */}
+      {/* FLOATING DRAGGED PIECE FOLLOWING POINTER (Mobile Touch Smooth UX & Progressive Reach) */}
       {activeDragIndex !== null && trayPieces[activeDragIndex] && dragPointerPos && (
         <div
           className="fixed pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2"
@@ -710,9 +728,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         >
           {(() => {
             const piece = trayPieces[activeDragIndex]!;
+            const cellSize = boardRef.current
+              ? (boardRef.current.getBoundingClientRect().width / 8) - 5
+              : 38;
             return (
               <div
-                className="grid gap-1 scale-110 drop-shadow-2xl"
+                className="grid gap-[2px] sm:gap-[2.5px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)]"
                 style={{
                   gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
                   gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
@@ -722,10 +743,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                   row.map((val, c) => (
                     <div
                       key={`drag-${r}-${c}`}
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-[6px] ${
+                      className={`rounded-[5px] sm:rounded-[6px] ${
                         val === 1 ? 'block-tile' : 'opacity-0'
                       }`}
                       style={{
+                        width: `${cellSize}px`,
+                        height: `${cellSize}px`,
                         background:
                           val === 1
                             ? PIECE_COLORS[piece.colorName as keyof typeof PIECE_COLORS]?.gradient || piece.color
