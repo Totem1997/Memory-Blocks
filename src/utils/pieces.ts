@@ -197,32 +197,91 @@ export function generateRandomPiece(): Piece {
   };
 }
 
-export function scoreBoard(board: (GridCell | null)[][]): number {
-  let score = 0;
+export const GENERATOR_CONFIG = {
+  // Candidate generation
+  CANDIDATE_SETS: 15, // How many 3-piece sets to generate and evaluate
+  SIMULATION_BRANCHING: 3, // Max placements to recurse on per piece (prevents combinatorial explosion)
   
-  // 1. Cleared lines are excellent
-  let fullRows = 0;
-  let fullCols = 0;
-  for (let r = 0; r < 8; r++) {
-    if (board[r].every(c => c !== null)) fullRows++;
+  // Board Scoring Weights
+  WEIGHTS: {
+    LINES_CLEARED: 2000,
+    HOLE_PENALTY: -250, // 1x1 empty cell surrounded by blocks/walls
+    ADJACENCY_REWARD: 10,
+    CELL_EMPTY_REWARD: 15, // Reward for having fewer blocks on board (preserves open areas)
+  },
+  
+  // Difficulty Progression (Turn thresholds)
+  DIFFICULTY: {
+    HONEYMOON: 3, // Turns 0-3: Pick the absolute best set
+    EARLY: 12,    // Turns 4-12: High generosity
+    MID: 25,      // Turns 13-25: Strategic decision making
+    LATE: 40      // Turns 26-40: Fewer obvious solutions
+    // 40+: End game, any solvable set
   }
-  for (let c = 0; c < 8; c++) {
+};
+
+function simulatePlacementAndClear(board: (GridCell | null)[][], piece: Piece, r: number, c: number) {
+  const simBoard = board.map(row => [...row]);
+  
+  // Place piece
+  for (let pr = 0; pr < piece.height; pr++) {
+    for (let pc = 0; pc < piece.width; pc++) {
+      if (piece.shape[pr][pc] === 1) {
+        simBoard[r + pr][c + pc] = {
+          color: piece.color,
+          colorName: piece.colorName,
+          id: 'sim',
+          placedAt: 0,
+        };
+      }
+    }
+  }
+
+  // Clear lines
+  const rowsToClear = new Set<number>();
+  const colsToClear = new Set<number>();
+
+  for (let row = 0; row < 8; row++) {
+    if (simBoard[row].every(cell => cell !== null)) {
+      rowsToClear.add(row);
+    }
+  }
+  for (let col = 0; col < 8; col++) {
     let isFull = true;
-    for (let r = 0; r < 8; r++) {
-      if (board[r][c] === null) {
+    for (let row = 0; row < 8; row++) {
+      if (simBoard[row][col] === null) {
         isFull = false;
         break;
       }
     }
-    if (isFull) fullCols++;
+    if (isFull) colsToClear.add(col);
   }
-  score += (fullRows + fullCols) * 1000;
 
-  // 2. Penalize 1x1 holes (empty cell surrounded by 4 blocks/walls)
+  const linesCleared = rowsToClear.size + colsToClear.size;
+
+  if (linesCleared > 0) {
+    for (const row of rowsToClear) {
+      for (let ci = 0; ci < 8; ci++) simBoard[row][ci] = null;
+    }
+    for (const col of colsToClear) {
+      for (let ri = 0; ri < 8; ri++) simBoard[ri][col] = null;
+    }
+  }
+
+  return { newBoard: simBoard, linesCleared };
+}
+
+function evaluateBoardState(board: (GridCell | null)[][]): number {
+  let score = 0;
+  let emptyCells = 0;
   let holes = 0;
+  let adjacency = 0;
+
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       if (board[r][c] === null) {
+        emptyCells++;
+        
         const up = r === 0 || board[r - 1][c] !== null;
         const down = r === 7 || board[r + 1][c] !== null;
         const left = c === 0 || board[r][c - 1] !== null;
@@ -230,16 +289,7 @@ export function scoreBoard(board: (GridCell | null)[][]): number {
         if (up && down && left && right) {
           holes++;
         }
-      }
-    }
-  }
-  score -= holes * 100;
-
-  // 3. Reward adjacency (compactness)
-  let adjacency = 0;
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      if (board[r][c] !== null) {
+      } else {
         if (r === 0 || board[r - 1][c] !== null) adjacency++;
         if (r === 7 || board[r + 1][c] !== null) adjacency++;
         if (c === 0 || board[r][c - 1] !== null) adjacency++;
@@ -247,124 +297,104 @@ export function scoreBoard(board: (GridCell | null)[][]): number {
       }
     }
   }
-  score += adjacency * 2;
+
+  score += emptyCells * GENERATOR_CONFIG.WEIGHTS.CELL_EMPTY_REWARD;
+  score += holes * GENERATOR_CONFIG.WEIGHTS.HOLE_PENALTY;
+  score += adjacency * GENERATOR_CONFIG.WEIGHTS.ADJACENCY_REWARD;
 
   return score;
 }
 
-export function evaluatePieceFit(board: (GridCell | null)[][], piece: Piece): number {
-  let maxScore = -Infinity;
-  let canPlace = false;
-
+function getValidPlacements(board: (GridCell | null)[][], piece: Piece) {
+  const placements = [];
   for (let r = 0; r <= 8 - piece.height; r++) {
     for (let c = 0; c <= 8 - piece.width; c++) {
       if (canPlacePiece(board, piece, r, c)) {
-        canPlace = true;
-        // Simulate board
-        const simBoard = board.map(row => [...row]);
-        for (let pr = 0; pr < piece.height; pr++) {
-          for (let pc = 0; pc < piece.width; pc++) {
-            if (piece.shape[pr][pc] === 1) {
-              simBoard[r + pr][c + pc] = {
-                color: piece.color,
-                colorName: piece.colorName,
-                id: 'sim',
-                placedAt: 0,
-              };
-            }
+        placements.push({ r, c });
+      }
+    }
+  }
+  return placements;
+}
+
+function scorePieceSet(board: (GridCell | null)[][], pieces: Piece[]): { maxScore: number, isSolvable: boolean } {
+  // Evaluate all valid sequences of placing the pieces
+  const permutations: number[][] = [];
+  if (pieces.length === 3) {
+    permutations.push([0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]);
+  } else if (pieces.length === 2) {
+    permutations.push([0, 1], [1, 0]);
+  } else if (pieces.length === 1) {
+    permutations.push([0]);
+  }
+
+  let overallMaxScore = -Infinity;
+  let isSolvable = false;
+
+  for (const perm of permutations) {
+    const p1 = pieces[perm[0]];
+    const p2 = perm.length > 1 ? pieces[perm[1]] : null;
+    const p3 = perm.length > 2 ? pieces[perm[2]] : null;
+
+    // LEVEL 1
+    const placements1 = getValidPlacements(board, p1);
+    if (placements1.length === 0) continue; 
+    
+    let states1 = placements1.map(pos => {
+      const { newBoard, linesCleared } = simulatePlacementAndClear(board, p1, pos.r, pos.c);
+      const score = evaluateBoardState(newBoard) + (linesCleared * GENERATOR_CONFIG.WEIGHTS.LINES_CLEARED);
+      return { board: newBoard, score, totalLinesCleared: linesCleared };
+    });
+    
+    states1.sort((a, b) => b.score - a.score);
+    states1 = states1.slice(0, GENERATOR_CONFIG.SIMULATION_BRANCHING);
+
+    if (!p2) {
+      isSolvable = true;
+      if (states1[0].score > overallMaxScore) overallMaxScore = states1[0].score;
+      continue;
+    }
+
+    // LEVEL 2
+    for (const s1 of states1) {
+      const placements2 = getValidPlacements(s1.board, p2);
+      if (placements2.length === 0) continue;
+
+      let states2 = placements2.map(pos => {
+        const { newBoard, linesCleared } = simulatePlacementAndClear(s1.board, p2, pos.r, pos.c);
+        const score = evaluateBoardState(newBoard) + ((s1.totalLinesCleared + linesCleared) * GENERATOR_CONFIG.WEIGHTS.LINES_CLEARED);
+        return { board: newBoard, score, totalLinesCleared: s1.totalLinesCleared + linesCleared };
+      });
+
+      states2.sort((a, b) => b.score - a.score);
+      states2 = states2.slice(0, GENERATOR_CONFIG.SIMULATION_BRANCHING);
+
+      if (!p3) {
+        isSolvable = true;
+        if (states2.length > 0 && states2[0].score > overallMaxScore) {
+          overallMaxScore = states2[0].score;
+        }
+        continue;
+      }
+
+      // LEVEL 3
+      for (const s2 of states2) {
+        const placements3 = getValidPlacements(s2.board, p3);
+        if (placements3.length > 0) {
+          isSolvable = true;
+          let bestLeafScore = -Infinity;
+          for (const pos of placements3) {
+             const { newBoard, linesCleared } = simulatePlacementAndClear(s2.board, p3, pos.r, pos.c);
+             const score = evaluateBoardState(newBoard) + ((s2.totalLinesCleared + linesCleared) * GENERATOR_CONFIG.WEIGHTS.LINES_CLEARED);
+             if (score > bestLeafScore) bestLeafScore = score;
           }
-        }
-        const score = scoreBoard(simBoard);
-        if (score > maxScore) {
-          maxScore = score;
+          if (bestLeafScore > overallMaxScore) overallMaxScore = bestLeafScore;
         }
       }
     }
   }
-  return canPlace ? maxScore : -Infinity;
-}
 
-export function generatePerfectPiece(currentBoard: (GridCell | null)[][]): Piece {
-  let bestTemplates: typeof SHAPE_TEMPLATES = [];
-  let bestScore = -Infinity;
-
-  for (const template of SHAPE_TEMPLATES) {
-    const testPiece: Piece = {
-      id: 'test',
-      shape: template.shape,
-      color: PIECE_COLORS[template.colorKey].primary,
-      colorName: template.colorKey,
-      width: template.shape[0].length,
-      height: template.shape.length,
-    };
-    const score = evaluatePieceFit(currentBoard, testPiece);
-    if (score > bestScore) {
-      bestScore = score;
-      bestTemplates = [template];
-    } else if (score === bestScore && score !== -Infinity) {
-      bestTemplates.push(template);
-    }
-  }
-
-  // If literally no piece fits (score is -Infinity), fallback
-  if (bestTemplates.length === 0) {
-    const fallbackTemplates = SHAPE_TEMPLATES.filter((t) => (t.weight || 3) >= 4);
-    const selectedTemplate = fallbackTemplates[Math.floor(Math.random() * fallbackTemplates.length)] || SHAPE_TEMPLATES[0];
-    return {
-      id: `piece_perf_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      shape: selectedTemplate.shape,
-      color: PIECE_COLORS[selectedTemplate.colorKey].primary,
-      colorName: selectedTemplate.colorKey,
-      width: selectedTemplate.shape[0].length,
-      height: selectedTemplate.shape.length,
-    };
-  }
-
-  const selectedTemplate = bestTemplates[Math.floor(Math.random() * bestTemplates.length)];
-  return {
-    id: `piece_perf_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-    shape: selectedTemplate.shape,
-    color: PIECE_COLORS[selectedTemplate.colorKey].primary,
-    colorName: selectedTemplate.colorKey,
-    width: selectedTemplate.shape[0].length,
-    height: selectedTemplate.shape.length,
-  };
-}
-
-export function generateHelpfulPiece(currentBoard: (GridCell | null)[][]): Piece {
-  // Generate a few random candidates and pick the one with the best board score
-  const candidates = [generateRandomPiece(), generateRandomPiece(), generateRandomPiece(), generateRandomPiece()];
-  
-  let bestPiece = candidates[0];
-  let bestScore = -Infinity;
-
-  for (const piece of candidates) {
-    const score = evaluatePieceFit(currentBoard, piece);
-    if (score > bestScore) {
-      bestScore = score;
-      bestPiece = piece;
-    }
-  }
-
-  // If none of the candidates could be placed at all, just fall back to generating a small piece that fits
-  if (bestScore === -Infinity) {
-    const fallbackTemplates = SHAPE_TEMPLATES.filter((t) => (t.weight || 3) >= 4);
-    for (const template of fallbackTemplates) {
-      const testPiece: Piece = {
-        id: `piece_fb_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        shape: template.shape,
-        color: PIECE_COLORS[template.colorKey].primary,
-        colorName: template.colorKey,
-        width: template.shape[0].length,
-        height: template.shape.length,
-      };
-      if (evaluatePieceFit(currentBoard, testPiece) !== -Infinity) {
-        return testPiece;
-      }
-    }
-  }
-
-  return bestPiece;
+  return { maxScore: overallMaxScore, isSolvable };
 }
 
 export function generatePieceTray(
@@ -384,9 +414,10 @@ export function generatePieceTray(
     });
 
     const shuffled = [...largeTemplates].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 3);
+    const selected = shuffled.slice(0, Math.max(count, 3));
 
-    for (const template of selected) {
+    for (let i = 0; i < count; i++) {
+      const template = selected[i % selected.length];
       pieces.push({
         id: `piece_start_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         shape: template.shape,
@@ -397,7 +428,6 @@ export function generatePieceTray(
       });
     }
     
-    // Shuffle the starter pieces slightly
     for (let i = pieces.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
@@ -405,58 +435,62 @@ export function generatePieceTray(
     return pieces;
   }
 
-  let perfectCount = 1;
-  let helpfulCount = 1;
+  if (!currentBoard) {
+    for (let i = 0; i < count; i++) pieces.push(generateRandomPiece());
+    return pieces;
+  }
+
+  // 2. SET-BASED GENERATION
+  const candidates: { pieces: Piece[]; maxScore: number; isSolvable: boolean }[] = [];
   
-  // Fair Dealer permanent logic: always provide a mix of highly useful and standard random pieces
-  // 1 Perfect (exact gap fill/line clear), 1 Helpful (compact/good fit), and the rest Random.
+  for (let i = 0; i < GENERATOR_CONFIG.CANDIDATE_SETS; i++) {
+    const candidatePieces: Piece[] = [];
+    for (let p = 0; p < count; p++) {
+      candidatePieces.push(generateRandomPiece());
+    }
+    candidates.push({ pieces: candidatePieces, ...scorePieceSet(currentBoard, candidatePieces) });
+  }
 
-  // Cap helpfulCount and perfectCount to the total requested pieces
-  perfectCount = Math.min(perfectCount, count);
-  helpfulCount = Math.min(helpfulCount, count - perfectCount);
+  const solvableCandidates = candidates.filter(c => c.isSolvable);
+  
+  // If no sets are solvable, just hand them the best unsolvable attempt (or purely random)
+  // Game over is inevitable, let it happen naturally.
+  if (solvableCandidates.length === 0) {
+    return candidates[0].pieces;
+  }
 
-  for (let i = 0; i < count; i++) {
-    if (currentBoard) {
-      if (i < perfectCount) {
-        pieces.push(generatePerfectPiece(currentBoard));
-      } else if (i < perfectCount + helpfulCount) {
-        pieces.push(generateHelpfulPiece(currentBoard));
-      } else {
-        pieces.push(generateRandomPiece());
-      }
+  solvableCandidates.sort((a, b) => b.maxScore - a.maxScore);
+
+  // Measure board congestion to adapt difficulty
+  let emptyCells = 0;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (currentBoard[r][c] === null) emptyCells++;
+    }
+  }
+  const isCongested = emptyCells < 32;
+
+  let selectedIndex = 0;
+  
+  if (turnsCount <= GENERATOR_CONFIG.DIFFICULTY.HONEYMOON) {
+    selectedIndex = 0; // Absolute best set found
+  } else {
+    // Dynamic difficulty: calculate how deep into the candidate pool we are willing to pull from
+    let topPercentile = 0.2;
+    
+    if (turnsCount <= GENERATOR_CONFIG.DIFFICULTY.EARLY) {
+      topPercentile = isCongested ? 0.1 : 0.3; // Be kinder if they are struggling early
+    } else if (turnsCount <= GENERATOR_CONFIG.DIFFICULTY.MID) {
+      topPercentile = isCongested ? 0.3 : 0.6; 
+    } else if (turnsCount <= GENERATOR_CONFIG.DIFFICULTY.LATE) {
+      topPercentile = isCongested ? 0.5 : 0.9;
     } else {
-      pieces.push(generateRandomPiece());
+      topPercentile = 1.0; // Late game: can pick any solvable set
     }
+    
+    const maxIndex = Math.max(0, Math.floor((solvableCandidates.length - 1) * topPercentile));
+    selectedIndex = Math.floor(Math.random() * (maxIndex + 1));
   }
 
-  // Ensure at least one piece can be placed if board is provided and has space
-  if (currentBoard && helpfulCount === 0 && perfectCount === 0) {
-    const canAnyFit = pieces.some((p) => canPlaceAnywhere(currentBoard, p));
-    if (!canAnyFit) {
-      // Find a small piece that can fit
-      const fallbackTemplates = SHAPE_TEMPLATES.filter((t) => (t.weight || 3) >= 4);
-      for (const template of fallbackTemplates) {
-        const testPiece: Piece = {
-          id: `piece_fb_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          shape: template.shape,
-          color: PIECE_COLORS[template.colorKey].primary,
-          colorName: template.colorKey,
-          width: template.shape[0].length,
-          height: template.shape.length,
-        };
-        if (canPlaceAnywhere(currentBoard, testPiece)) {
-          pieces[0] = testPiece;
-          break;
-        }
-      }
-    }
-  }
-
-  // Shuffle pieces so the helpful pieces aren't always in the same slots
-  for (let i = pieces.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
-  }
-
-  return pieces;
+  return solvableCandidates[selectedIndex].pieces;
 }
