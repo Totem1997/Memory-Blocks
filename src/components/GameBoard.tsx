@@ -661,8 +661,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                           `}
                           style={{
                             background:
-                              PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient ||
-                              cell.color,
+                              (isPreviewClear && ghostPiece)
+                                ? (PIECE_COLORS[ghostPiece.colorName as keyof typeof PIECE_COLORS]?.gradient || ghostPiece.color)
+                                : (PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color),
                           }}
                         />
                       )}
@@ -670,7 +671,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       {/* Ghost preview placement on empty cells */}
                       {isGhost && ghostPiece && cell === null && (
                         <div
-                          className="w-full h-full opacity-75 animate-pulse-subtle block-tile-ghost z-10"
+                          className={`w-full h-full block-tile-ghost z-10 ${
+                            isPreviewClear ? 'opacity-100 block-tile' : 'opacity-75 animate-pulse-subtle'
+                          }`}
                           style={{
                             background:
                               PIECE_COLORS[ghostPiece.colorName as keyof typeof PIECE_COLORS]?.gradient ||
@@ -680,8 +683,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       )}
 
                       {/* Preview flash for lines that will complete */}
-                      {isPreviewClear && (
-                        <div className="absolute inset-[1px] bg-white/45 animate-pulse pointer-events-none" />
+                      {isPreviewClear && ghostPiece && (
+                        <div className="absolute inset-[1px] rainbow-border-glow pointer-events-none z-40" />
                       )}
                     </div>
                   );
