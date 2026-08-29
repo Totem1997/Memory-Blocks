@@ -591,11 +591,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               <div className="absolute inset-0 bg-stone-900/10 pointer-events-none mix-blend-multiply" />
             </div>
 
-            {/* 2. PROMINENT WHITE GRIDLINES OVERLAY (Exact match to reference: 64 transparent apertures with white borders & fillets) */}
-            <WhiteGridOverlay />
-
-            {/* 3. 8x8 INTERACTIVE & PLACED BLOCKS LAYER */}
-            <div className="relative z-20 grid grid-cols-8 grid-rows-8 w-full h-full">
+            {/* 2. 8x8 INTERACTIVE & PLACED BLOCKS LAYER */}
+            <div className="relative z-10 grid grid-cols-8 grid-rows-8 w-full h-full">
               {board.map((row, rIdx) =>
                 row.map((cell, cIdx) => {
                   // Check if this cell is part of clearing lines
@@ -627,16 +624,16 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     <div
                       key={`${rIdx}-${cIdx}`}
                       id={`cell-${rIdx}-${cIdx}`}
-                      className="relative w-full h-full p-[2px] sm:p-[2.5px] flex items-center justify-center pointer-events-none"
+                      className="relative w-full h-full flex items-center justify-center pointer-events-none"
                     >
                       {/* Placed candy block tile */}
                       {cell !== null && (
                         <div
-                          className={`block-tile w-full h-full rounded-[5px] sm:rounded-[6px] transition-all duration-100 flex items-center justify-center
+                          className={`block-tile w-full h-full transition-all duration-100 flex items-center justify-center
                             ${
                               isClearing
-                                ? 'scale-110 brightness-150 transition-transform duration-200 shadow-xl z-30'
-                                : 'z-20'
+                                ? 'scale-110 brightness-150 transition-transform duration-200 shadow-xl z-20'
+                                : 'z-10'
                             }
                           `}
                           style={{
@@ -650,7 +647,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       {/* Ghost preview placement on empty cells */}
                       {isGhost && ghostPiece && cell === null && (
                         <div
-                          className="w-full h-full rounded-[5px] sm:rounded-[6px] opacity-75 animate-pulse-subtle block-tile-ghost z-20"
+                          className="w-full h-full opacity-75 animate-pulse-subtle block-tile-ghost z-10"
                           style={{
                             background:
                               PIECE_COLORS[ghostPiece.colorName as keyof typeof PIECE_COLORS]?.gradient ||
@@ -661,12 +658,17 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
                       {/* Preview flash for lines that will complete */}
                       {isPreviewClear && (
-                        <div className="absolute inset-[2px] bg-white/45 animate-pulse pointer-events-none rounded-[5px]" />
+                        <div className="absolute inset-0 bg-white/45 animate-pulse pointer-events-none" />
                       )}
                     </div>
                   );
                 })
               )}
+            </div>
+
+            {/* 3. PROMINENT WHITE GRIDLINES OVERLAY (Sits on top, masking the square blocks with white lines and fillets) */}
+            <div className="absolute inset-0 z-30 pointer-events-none mix-blend-screen">
+              <WhiteGridOverlay />
             </div>
 
             {/* Floating Score Popups */}
@@ -722,7 +724,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               >
                 {/* Piece shape grid representation */}
                 <div
-                  className="grid gap-1 pointer-events-none"
+                  className="grid gap-[1px] sm:gap-[1.5px] pointer-events-none"
                   style={{
                     gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
                     gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
@@ -732,7 +734,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     row.map((val, c) => (
                       <div
                         key={`${r}-${c}`}
-                        className={`w-5 h-5 sm:w-6 sm:h-6 rounded-[5px] ${
+                        className={`w-5 h-5 sm:w-6 sm:h-6 rounded-[3px] sm:rounded-[4px] ${
                           val === 1 ? 'block-tile' : 'opacity-0'
                         }`}
                         style={{
@@ -763,21 +765,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           {(() => {
             const piece = trayPieces[activeDragIndex]!;
             const cellSize = boardRef.current
-              ? (boardRef.current.getBoundingClientRect().width / 8) - 5
+              ? (boardRef.current.getBoundingClientRect().width / 8) - 2
               : 38;
             return (
               <div
-                className="grid gap-[2px] sm:gap-[2.5px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)]"
+                className="grid gap-[1px] sm:gap-[1.5px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] w-max flex-shrink-0"
                 style={{
-                  gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
-                  gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
+                  gridTemplateRows: `repeat(${piece.height}, ${cellSize}px)`,
+                  gridTemplateColumns: `repeat(${piece.width}, ${cellSize}px)`,
                 }}
               >
                 {piece.shape.map((row, r) =>
                   row.map((val, c) => (
                     <div
                       key={`drag-${r}-${c}`}
-                      className={`rounded-[5px] sm:rounded-[6px] ${
+                      className={`rounded-[3px] sm:rounded-[4px] ${
                         val === 1 ? 'block-tile' : 'opacity-0'
                       }`}
                       style={{

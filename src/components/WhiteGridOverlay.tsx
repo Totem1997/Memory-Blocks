@@ -19,11 +19,11 @@ export const WhiteGridOverlay: React.FC<WhiteGridOverlayProps> = ({
     // Coordinate space: 1000 x 1000
     // 8x8 grid: each slot is 125 units (1000 / 8)
     const slot = 125;
-    // Line width between cells = 2 * halfGap = 7.5 units (~2.8px on 380px screen)
-    const halfGap = 3.75;
-    const cellW = slot - 2 * halfGap; // 117.5 units
-    const rx = 10.5; // Smooth rounded corner fillets
-    const ry = 10.5;
+    // Line width between cells = 2 * halfGap
+    const halfGap = 1.25;
+    const cellW = slot - 2 * halfGap;
+    const rx = 8.5; // Smooth rounded corner fillets
+    const ry = 8.5;
 
     // Outer boundary of the grid with outer corner radius
     const outerR = 18;
