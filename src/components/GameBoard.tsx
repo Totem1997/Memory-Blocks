@@ -49,6 +49,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   // Available pieces in bottom tray (3 slots)
   const [trayPieces, setTrayPieces] = useState<(Piece | null)[]>([null, null, null]);
 
+  // Turn tracking for piece generation difficulty
+  const [turnsCount, setTurnsCount] = useState(0);
+
   // Scores
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
@@ -105,7 +108,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     setClearingLines({ rows: [], cols: [] });
     setScorePopups([]);
     setRewardPopupAvailable(false);
-    const initialPieces = generatePieceTray(3, freshBoard);
+    setTurnsCount(0);
+    const initialPieces = generatePieceTray(3, freshBoard, 0);
     setTrayPieces(initialPieces);
   }, []);
 
@@ -259,7 +263,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     const activePieces = trayPieces.filter((p): p is Piece => p !== null);
     if (activePieces.length === 0) {
       // All 3 pieces used! Refill tray with 3 new pieces
-      const newPieces = generatePieceTray(3, board);
+      const nextTurns = turnsCount + 1;
+      setTurnsCount(nextTurns);
+      const newPieces = generatePieceTray(3, board, nextTurns);
       setTrayPieces(newPieces);
       return;
     }
@@ -274,7 +280,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [board, trayPieces, isGameOver]);
+  }, [board, trayPieces, isGameOver, turnsCount]);
 
   // Pointer / Touch Drag Handler (Ergonomic Block Blast progressive offset & reach)
   const handlePiecePointerDown = (
