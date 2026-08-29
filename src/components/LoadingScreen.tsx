@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles } from 'lucide-react';
-import { WhiteGridOverlay } from './WhiteGridOverlay';
 
 interface LoadingScreenProps {
   photoSrc: string;
@@ -56,10 +55,25 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
           />
           <div className="absolute inset-0 bg-stone-900/10 pointer-events-none mix-blend-multiply" />
 
-          {/* White Grid overlay */}
-          <WhiteGridOverlay className="opacity-95" />
+          {/* Straight gridlines overlay */}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            {/* Vertical lines */}
+            <div className="absolute inset-0 flex justify-evenly">
+              {[...Array(7)].map((_, i) => (
+                <div key={`v-${i}`} className="w-[1px] h-full bg-white/20" />
+              ))}
+            </div>
+            {/* Horizontal lines */}
+            <div className="absolute inset-0 flex flex-col justify-evenly">
+              {[...Array(7)].map((_, i) => (
+                <div key={`h-${i}`} className="h-[1px] w-full bg-white/20" />
+              ))}
+            </div>
+            {/* Outer boundary */}
+            <div className="absolute inset-0 border border-white/20" />
+          </div>
 
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center z-20">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}

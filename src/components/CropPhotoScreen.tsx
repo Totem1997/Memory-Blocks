@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, ZoomIn, ZoomOut, Check, Move } from 'lucide-react';
-import { WhiteGridOverlay } from './WhiteGridOverlay';
 
 interface CropPhotoScreenProps {
   photoSrc: string;
@@ -179,7 +178,22 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
           </div>
 
           {/* Exact 8x8 Grid Preview Overlay */}
-          <WhiteGridOverlay className="opacity-90" />
+          <div className="absolute inset-0 z-10 pointer-events-none opacity-90">
+            {/* Vertical lines */}
+            <div className="absolute inset-0 flex justify-evenly">
+              {[...Array(7)].map((_, i) => (
+                <div key={`v-${i}`} className="w-[1px] h-full bg-white/20" />
+              ))}
+            </div>
+            {/* Horizontal lines */}
+            <div className="absolute inset-0 flex flex-col justify-evenly">
+              {[...Array(7)].map((_, i) => (
+                <div key={`h-${i}`} className="h-[1px] w-full bg-white/20" />
+              ))}
+            </div>
+            {/* Outer boundary */}
+            <div className="absolute inset-0 border border-white/20" />
+          </div>
 
           {/* Hint badge */}
           <div className="absolute top-2 left-2 px-2 py-1 rounded-md bg-black/40 backdrop-blur-xs text-[10px] text-white/90 font-medium flex items-center gap-1 pointer-events-none">
