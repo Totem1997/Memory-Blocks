@@ -33,6 +33,17 @@ interface GameBoardProps {
   onChangeMemory: () => void;
 }
 
+interface ExplosionParticle {
+  id: string;
+  r: number;
+  c: number;
+  color: string;
+  tx: number;
+  ty: number;
+  rot: number;
+  scale: number;
+}
+
 export const GameBoard: React.FC<GameBoardProps> = ({
   photoSrc,
   audience,
@@ -65,6 +76,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     cols: [],
   });
   const [scorePopups, setScorePopups] = useState<ScorePopup[]>([]);
+  const [particles, setParticles] = useState<ExplosionParticle[]>([]);
 
   // Reward state
   const [rewardPopupAvailable, setRewardPopupAvailable] = useState(false);
@@ -199,8 +211,56 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       // Show floating score
       if (boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
-        const popupText = totalLines > 1 ? `+${linePoints} COMBO x${totalLines}!` : `+${linePoints}`;
+        const popupText = totalLines > 1 ? `COMBO x${totalLines}!\n+${linePoints}` : `+${linePoints}`;
         showScorePopup(popupText, rect.width / 2, rect.height / 2, totalLines > 1 ? 'combo' : 'normal');
+
+        // --- Spawn Candy Shatter Particles ---
+        const clearedCells = new Map<string, { r: number; c: number; color: string }>();
+        fullRows.forEach((r) => {
+          for (let c = 0; c < 8; c++) {
+            const cell = currentBoard[r][c];
+            if (cell) {
+              clearedCells.set(`${r},${c}`, {
+                r,
+                c,
+                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
+              });
+            }
+          }
+        });
+        fullCols.forEach((c) => {
+          for (let r = 0; r < 8; r++) {
+            const cell = currentBoard[r][c];
+            if (cell) {
+              clearedCells.set(`${r},${c}`, {
+                r,
+                c,
+                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
+              });
+            }
+          }
+        });
+
+        const newParticles: ExplosionParticle[] = [];
+        clearedCells.forEach((cell) => {
+          for (let i = 0; i < 5; i++) {
+            newParticles.push({
+              id: `part_${Date.now()}_${cell.r}_${cell.c}_${i}_${Math.random()}`,
+              r: cell.r,
+              c: cell.c,
+              color: cell.color,
+              tx: (Math.random() - 0.5) * 150, // blast radius X
+              ty: (Math.random() - 0.5) * 150, // blast radius Y
+              rot: (Math.random() - 0.5) * 360,
+              scale: 0.3 + Math.random() * 0.7,
+            });
+          }
+        });
+
+        setParticles((prev) => [...prev, ...newParticles]);
+        setTimeout(() => {
+          setParticles((prev) => prev.filter((p) => !newParticles.find((n) => n.id === p.id)));
+        }, 800); // Remove after animation finishes
       }
 
       // Wait for clear animation (240ms) then clear cells
@@ -652,18 +712,16 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       {/* Placed candy block tile */}
                       {cell !== null && (
                         <div
-                          className={`block-tile w-full h-full transition-all duration-100 flex items-center justify-center
+                          className={`block-tile w-full h-full transition-transform duration-100 flex items-center justify-center
                             ${
                               isClearing
-                                ? 'scale-110 brightness-150 transition-transform duration-200 shadow-xl z-20'
+                                ? 'scale-110 brightness-150 transition-transform duration-200 shadow-xl z-20 rainbow-overlay'
                                 : 'z-10'
                             }
+                            ${isPreviewClear && ghostPiece ? 'rainbow-overlay z-20 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : ''}
                           `}
                           style={{
-                            background:
-                              (isPreviewClear && ghostPiece)
-                                ? (PIECE_COLORS[ghostPiece.colorName as keyof typeof PIECE_COLORS]?.gradient || ghostPiece.color)
-                                : (PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color),
+                            background: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
                           }}
                         />
                       )}
@@ -672,7 +730,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       {isGhost && ghostPiece && cell === null && (
                         <div
                           className={`w-full h-full block-tile-ghost z-10 ${
-                            isPreviewClear ? 'opacity-100 block-tile' : 'opacity-75 animate-pulse-subtle'
+                            isPreviewClear ? 'opacity-100 block-tile rainbow-overlay z-20 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'opacity-75 animate-pulse-subtle'
                           }`}
                           style={{
                             background:
@@ -681,31 +739,49 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                           }}
                         />
                       )}
-
-                      {/* Preview flash for lines that will complete */}
-                      {isPreviewClear && ghostPiece && (
-                        <div className="absolute inset-[1px] rainbow-border-glow pointer-events-none z-40" />
-                      )}
                     </div>
                   );
                 })
               )}
             </div>
 
+            {/* Candy Shatter Particles */}
+            <div className="absolute inset-0 pointer-events-none z-40">
+              {particles.map((p) => (
+                <div
+                  key={p.id}
+                  className="absolute w-3 h-3 rounded-sm animate-particle-explode shadow-sm"
+                  style={{
+                    top: `calc(${p.r * 12.5}% + 6.25% - 6px)`,
+                    left: `calc(${p.c * 12.5}% + 6.25% - 6px)`,
+                    background: p.color,
+                    '--tx': `${p.tx}px`,
+                    '--ty': `${p.ty}px`,
+                    '--rot': `${p.rot}deg`,
+                    '--scale': p.scale,
+                  } as React.CSSProperties}
+                />
+              ))}
+            </div>
+
             {/* Floating Score Popups */}
-            <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none z-50 overflow-visible">
               {scorePopups.map((popup) => (
                 <motion.div
                   key={popup.id}
-                  initial={{ opacity: 1, scale: 0.7, y: 0 }}
-                  animate={{ opacity: 0, scale: 1.25, y: -45 }}
-                  transition={{ duration: 0.9, ease: 'easeOut' }}
-                  style={{ left: popup.x - 60, top: popup.y - 20 }}
-                  className={`absolute w-32 text-center font-black font-display text-lg sm:text-xl drop-shadow-md
-                    ${popup.type === 'combo' ? 'text-[#F59E0B]' : popup.type === 'board-clear' ? 'text-[#E11D48]' : 'text-white'}
+                  initial={{ opacity: 0, scale: 0.5, y: 0 }}
+                  animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1.4, 1.2, 1], y: [0, -30, -45, -70] }}
+                  transition={{ duration: 1.1, times: [0, 0.15, 0.8, 1], ease: 'easeOut' }}
+                  style={{ left: popup.x - 100, top: popup.y - 30, width: 200 }}
+                  className={`absolute text-center font-black font-display drop-shadow-xl
+                    ${popup.type === 'combo' ? 'text-3xl text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.8)]' : popup.type === 'board-clear' ? 'text-3xl text-rose-500 drop-shadow-[0_0_12px_rgba(225,29,72,0.8)]' : 'text-2xl text-white'}
                   `}
                 >
-                  {popup.text}
+                  {popup.text.split('\n').map((line, i) => (
+                    <div key={i} className={i === 0 && popup.type === 'combo' ? 'text-4xl italic tracking-wider mb-1' : ''}>
+                      {line}
+                    </div>
+                  ))}
                 </motion.div>
               ))}
             </div>

@@ -1,4 +1,6 @@
-import { GridCell, Piece } from '../types';
+const fs = require('fs');
+
+const content = `import { GridCell, Piece } from '../types';
 
 export const PIECE_COLORS = {
   purple: {
@@ -192,7 +194,7 @@ function countShapeBlocks(shape: number[][]): number {
 
 function createPieceObj(shape: number[][], colorKey: string): Piece {
   return {
-    id: `piece_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    id: \`piece_\${Date.now()}_\${Math.random().toString(36).substring(2, 7)}\`,
     shape,
     color: PIECE_COLORS[colorKey as keyof typeof PIECE_COLORS].primary,
     colorName: colorKey,
@@ -327,7 +329,7 @@ export function generatePieceTray(
        const t = getRandomTemplate(['bar', 'block']);
        return {
           ...createPieceObj(t.shape, t.colorKey),
-          id: `piece_${Date.now()}_${i}`
+          id: \`piece_\${Date.now()}_\${i}\`
        }
      });
   }
@@ -417,6 +419,8 @@ export function generatePieceTray(
   // Re-assign IDs for React keys
   return finalTray.map((p, idx) => ({
      ...p,
-     id: `piece_${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${idx}`
+     id: \`piece_\${Date.now()}_\${Math.random().toString(36).substring(2, 7)}_\${idx}\`
   }));
 }
+`
+fs.writeFileSync('src/utils/pieces.ts', content);
