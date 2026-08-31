@@ -50,21 +50,37 @@ export function playPickupSound() {
   if (!ctx) return;
 
   const now = ctx.currentTime;
-  const osc = ctx.createOscillator();
+  
+  // Create a short burst of white noise for the "air swoop/swish"
+  const bufferSize = ctx.sampleRate * 0.15; // 150ms
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * 0.5;
+  }
+
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = buffer;
+
+  // Filter to shape the noise into a fast "whoosh"
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.Q.value = 1.5;
+  filter.frequency.setValueAtTime(300, now);
+  filter.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+
   const gain = ctx.createGain();
+  // Fast fade in, then fade out to simulate swooping motion
+  gain.gain.setValueAtTime(0.01, now);
+  gain.gain.linearRampToValueAtTime(0.4, now + 0.05); 
+  gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
 
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(320, now);
-  osc.frequency.exponentialRampToValueAtTime(460, now + 0.08);
-
-  gain.gain.setValueAtTime(0.08, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-
-  osc.connect(gain);
+  noiseSource.connect(filter);
+  filter.connect(gain);
   gain.connect(ctx.destination);
 
-  osc.start(now);
-  osc.stop(now + 0.08);
+  noiseSource.start(now);
+  noiseSource.stop(now + 0.15);
 }
 
 export function playPlaceSound() {
@@ -72,22 +88,36 @@ export function playPlaceSound() {
   if (!ctx) return;
 
   const now = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
 
-  // Cozy woody/bubble snap sound
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(240, now);
-  osc.frequency.exponentialRampToValueAtTime(140, now + 0.09);
+  // 1. The Wooden Knock (Hollow, marimba-like body)
+  const oscBody = ctx.createOscillator();
+  const gainBody = ctx.createGain();
+  oscBody.type = 'triangle'; // Triangle gives a hollow, woody tone
+  oscBody.frequency.setValueAtTime(450, now);
+  oscBody.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+  
+  gainBody.gain.setValueAtTime(0.8, now);
+  gainBody.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
 
-  gain.gain.setValueAtTime(0.18, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+  oscBody.connect(gainBody);
+  gainBody.connect(ctx.destination);
+  oscBody.start(now);
+  oscBody.stop(now + 0.08);
 
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+  // 2. The Clop (Higher pitched wooden tap)
+  const oscClick = ctx.createOscillator();
+  const gainClick = ctx.createGain();
+  oscClick.type = 'sine'; // Sine for a clean, round tap
+  oscClick.frequency.setValueAtTime(800, now);
+  oscClick.frequency.exponentialRampToValueAtTime(200, now + 0.03);
+  
+  gainClick.gain.setValueAtTime(0.4, now);
+  gainClick.gain.exponentialRampToValueAtTime(0.01, now + 0.03);
 
-  osc.start(now);
-  osc.stop(now + 0.09);
+  oscClick.connect(gainClick);
+  gainClick.connect(ctx.destination);
+  oscClick.start(now);
+  oscClick.stop(now + 0.03);
 }
 
 export function playLineClearSound(lineCount: number = 1) {
