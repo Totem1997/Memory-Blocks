@@ -44,6 +44,59 @@ interface ExplosionParticle {
   scale: number;
 }
 
+function AnimatedNumber({ value }: { value: number }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [scale, setScale] = useState(1);
+  const prevValue = useRef(value);
+
+  useEffect(() => {
+    if (value === prevValue.current) return;
+    
+    // Animate scale (pop)
+    setScale(1.15);
+    const scaleTimeout = setTimeout(() => {
+      setScale(1);
+    }, 120);
+
+    // Animate number rolling
+    const duration = 2000; // ms
+    const startTime = performance.now();
+    const startValue = prevValue.current;
+    const endValue = value;
+
+    const animateNumber = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // easeOutCubic
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      
+      setDisplayValue(Math.round(startValue + (endValue - startValue) * easeProgress));
+
+      if (progress < 1) {
+        requestAnimationFrame(animateNumber);
+      }
+    };
+    
+    requestAnimationFrame(animateNumber);
+    prevValue.current = value;
+
+    return () => {
+      clearTimeout(scaleTimeout);
+    };
+  }, [value]);
+
+  return (
+    <motion.span
+      animate={{ scale }}
+      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+      style={{ display: 'inline-block', originX: 0.5, originY: 0.5 }}
+    >
+      {displayValue.toLocaleString()}
+    </motion.span>
+  );
+}
+
 export const GameBoard: React.FC<GameBoardProps> = ({
   photoSrc,
   audience,
@@ -574,7 +627,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             SCORE
           </span>
           <span className="text-3xl sm:text-4xl font-extrabold text-[#2D2A26] tracking-tight font-display leading-tight">
-            {score.toLocaleString()}
+            <AnimatedNumber value={score} />
           </span>
         </div>
 
@@ -587,7 +640,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             </span>
           </div>
           <span className="text-2xl sm:text-3xl font-extrabold text-[#F43F5E] tracking-tight font-display leading-tight">
-            {bestScore.toLocaleString()}
+            <AnimatedNumber value={bestScore} />
           </span>
         </div>
       </header>
