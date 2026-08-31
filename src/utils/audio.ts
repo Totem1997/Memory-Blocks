@@ -6,6 +6,10 @@
 let audioCtx: AudioContext | null = null;
 let soundEnabled = true;
 
+// Chain variables for consecutive clear combos
+let lastClearTime = 0;
+let currentChainCount = 0;
+
 export function setSoundEnabled(enabled: boolean) {
   soundEnabled = enabled;
   try {
@@ -121,31 +125,108 @@ export function playPlaceSound() {
 }
 
 export function playLineClearSound(lineCount: number = 1) {
+  const nowMs = Date.now();
+  
+  if (currentChainCount < 10) {
+    // Climb gracefully 1 to 10 with no timer pressure
+    currentChainCount++;
+  } else {
+    // Fever Mode: At chain 10, the 10-second timer kicks in
+    if (nowMs - lastClearTime <= 10000) {
+      currentChainCount = 10;
+    } else {
+      currentChainCount = 1;
+    }
+  }
+  
+  lastClearTime = nowMs;
+
   const ctx = getAudioContext();
   if (!ctx) return;
 
-  const baseFreqs = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-  const count = Math.min(lineCount, 4);
+  const now = ctx.currentTime;
 
-  for (let i = 0; i < count + 1; i++) {
-    const delay = i * 0.06;
-    const now = ctx.currentTime + delay;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    const freq = baseFreqs[i % baseFreqs.length] * (1 + 0.1 * Math.floor(i / 4));
-    osc.frequency.setValueAtTime(freq, now);
-
-    gain.gain.setValueAtTime(0.14, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.24);
+  // 1. Crisp Ice Splash (Background Texture)
+  // Short burst of high-frequency white noise to mimic shattering ice
+  const bufferSize = ctx.sampleRate * 0.12; // 120ms
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1);
   }
+  const noiseSource = ctx.createBufferSource();
+  noiseSource.buffer = buffer;
+
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = 'highpass';
+  noiseFilter.frequency.setValueAtTime(4000, now);
+
+  const noiseGain = ctx.createGain();
+  // Soften the ice splash: lower volume and soft attack
+  noiseGain.gain.setValueAtTime(0.01, now);
+  noiseGain.gain.linearRampToValueAtTime(0.1, now + 0.02);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+  noiseSource.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noiseSource.start(now);
+  noiseSource.stop(now + 0.15);
+
+  // 2. Pronounced Piano Chord (The Star of the Sound)
+  // Base frequencies for a satisfying, rich Major chord (C4, E4, G4, C5)
+  const baseNotes = [261.63, 329.63, 392.00, 523.25];
+  
+  // Pitch goes up for consecutive chain clears (up to 10 max)
+  const chainMultipliers = [
+    1.0,      // Chain 1: Base
+    1.122,    // Chain 2: Major 2nd
+    1.25,     // Chain 3: Major 3rd
+    1.333,    // Chain 4: Perfect 4th
+    1.5,      // Chain 5: Perfect 5th
+    1.666,    // Chain 6: Major 6th
+    1.875,    // Chain 7: Major 7th
+    2.0,      // Chain 8: Octave
+    2.25,     // Chain 9: Major 9th
+    2.5       // Chain 10: Major 10th
+  ];
+  const pitchMultiplier = chainMultipliers[currentChainCount - 1];
+
+  baseNotes.forEach((freq) => {
+    const noteFreq = freq * pitchMultiplier;
+
+    // --- The Piano Body (Warm & Woody) ---
+    const bodyOsc = ctx.createOscillator();
+    const bodyGain = ctx.createGain();
+    bodyOsc.type = 'triangle';
+    bodyOsc.frequency.setValueAtTime(noteFreq, now);
+    
+    // Soft attack (prevents jumpscare pop) and elegant long fade
+    bodyGain.gain.setValueAtTime(0.01, now);
+    bodyGain.gain.linearRampToValueAtTime(0.2, now + 0.03);
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+    
+    bodyOsc.connect(bodyGain);
+    bodyGain.connect(ctx.destination);
+    bodyOsc.start(now);
+    bodyOsc.stop(now + 0.8);
+
+    // --- The Piano Hammer (Bright Strike) ---
+    const hammerOsc = ctx.createOscillator();
+    const hammerGain = ctx.createGain();
+    hammerOsc.type = 'sine';
+    hammerOsc.frequency.setValueAtTime(noteFreq * 2, now); // 1st overtone
+    
+    // Softer, gentler strike
+    hammerGain.gain.setValueAtTime(0.01, now);
+    hammerGain.gain.linearRampToValueAtTime(0.12, now + 0.02);
+    hammerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    
+    hammerOsc.connect(hammerGain);
+    hammerGain.connect(ctx.destination);
+    hammerOsc.start(now);
+    hammerOsc.stop(now + 0.2);
+  });
 }
 
 export function playFullBoardClearSound() {
