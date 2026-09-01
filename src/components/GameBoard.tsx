@@ -44,25 +44,22 @@ interface ExplosionParticle {
   scale: number;
 }
 
-function AnimatedNumber({ value }: { value: number }) {
+function AnimatedNumber({ value, useGrouping = true }: { value: number; useGrouping?: boolean }) {
   const [displayValue, setDisplayValue] = useState(value);
-  const [scale, setScale] = useState(1);
+  const [isRolling, setIsRolling] = useState(false);
   const prevValue = useRef(value);
 
   useEffect(() => {
     if (value === prevValue.current) return;
     
-    // Animate scale (pop)
-    setScale(1.15);
-    const scaleTimeout = setTimeout(() => {
-      setScale(1);
-    }, 120);
+    setIsRolling(true);
 
     // Animate number rolling
     const duration = 2000; // ms
     const startTime = performance.now();
     const startValue = prevValue.current;
     const endValue = value;
+    let rafId: number;
 
     const animateNumber = (now: number) => {
       const elapsed = now - startTime;
@@ -74,25 +71,31 @@ function AnimatedNumber({ value }: { value: number }) {
       setDisplayValue(Math.round(startValue + (endValue - startValue) * easeProgress));
 
       if (progress < 1) {
-        requestAnimationFrame(animateNumber);
+        rafId = requestAnimationFrame(animateNumber);
+      } else {
+        setIsRolling(false);
       }
     };
     
-    requestAnimationFrame(animateNumber);
+    rafId = requestAnimationFrame(animateNumber);
     prevValue.current = value;
 
     return () => {
-      clearTimeout(scaleTimeout);
+      cancelAnimationFrame(rafId);
     };
   }, [value]);
 
   return (
     <motion.span
-      animate={{ scale }}
-      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+      animate={{ scale: isRolling ? 1.25 : 1 }}
+      transition={
+        isRolling
+          ? { duration: 0.3, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }
+          : { type: 'spring', stiffness: 300, damping: 15 }
+      }
       style={{ display: 'inline-block', originX: 0.5, originY: 0.5 }}
     >
-      {displayValue.toLocaleString()}
+      {useGrouping ? displayValue.toLocaleString() : displayValue.toString()}
     </motion.span>
   );
 }
@@ -597,18 +600,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {/* Background soft dot decoration */}
-      <div className="absolute top-2 right-3 grid grid-cols-4 gap-2 opacity-30 pointer-events-none">
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#E5D5C5]" />
-        ))}
-      </div>
-      <div className="absolute bottom-4 left-3 grid grid-cols-4 gap-2 opacity-30 pointer-events-none">
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#E5D5C5]" />
-        ))}
-      </div>
-
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
       <header className="flex items-center justify-between w-full pt-1 px-2">
         {/* Pause button: circular icon button on left */}
@@ -622,12 +613,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         </button>
 
         {/* Center: SCORE */}
-        <div className="flex flex-col items-center">
-          <span className="text-[11px] font-bold tracking-widest text-[#8C7A6B] uppercase font-display">
+        <div className="flex flex-col items-center relative z-10 translate-y-6 sm:translate-y-8">
+          <span className="text-[12px] font-bold tracking-widest text-[#8C7A6B] uppercase font-display">
             SCORE
           </span>
-          <span className="text-3xl sm:text-4xl font-extrabold text-[#2D2A26] tracking-tight font-display leading-tight">
-            <AnimatedNumber value={score} />
+          <span className="text-5xl sm:text-6xl font-black text-[#2D2A26] tracking-tighter font-display leading-none mt-1">
+            <AnimatedNumber value={score} useGrouping={false} />
           </span>
         </div>
 
