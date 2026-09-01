@@ -72,7 +72,7 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF7F2] text-[#2D2A26] flex flex-col justify-center">
+    <main className={`min-h-screen text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
       {currentScreen === 'welcome' && (
         <WelcomeScreen
           themeConfig={themeConfig}

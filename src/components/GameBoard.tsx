@@ -600,37 +600,47 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
+      {/* Blurred Photo Background Layer */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-black/5">
+        <img
+          src={photoSrc}
+          alt="Blurred Background"
+          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
       <header className="flex items-center justify-between w-full pt-1 px-2">
         {/* Pause button: circular icon button on left */}
         <button
           id="btn-pause"
           onClick={() => setIsPaused(true)}
-          className="w-11 h-11 rounded-full bg-white border border-[#E8DFC8] shadow-xs flex items-center justify-center text-[#2D2A26] hover:bg-[#F5EDE3] active:scale-95 transition-all cursor-pointer"
+          className="w-11 h-11 rounded-full bg-white/50 backdrop-blur-md border border-white/50 shadow-sm flex items-center justify-center text-indigo-950 hover:bg-white/60 active:scale-95 transition-all cursor-pointer"
           aria-label="Pause game"
         >
-          <Pause className="w-5 h-5 fill-current text-[#2D2A26]" />
+          <Pause className="w-5 h-5 fill-current text-indigo-950" />
         </button>
 
         {/* Center: SCORE */}
-        <div className="flex flex-col items-center relative z-10 translate-y-6 sm:translate-y-8">
-          <span className="text-[12px] font-bold tracking-widest text-[#8C7A6B] uppercase font-display">
+        <div className="flex flex-col items-center relative z-10 translate-y-6 sm:translate-y-8 drop-shadow-md">
+          <span className="text-[12px] font-bold tracking-widest text-indigo-950/70 uppercase font-display">
             SCORE
           </span>
-          <span className="text-5xl sm:text-6xl font-black text-[#2D2A26] tracking-tighter font-display leading-none mt-1">
+          <span className="text-5xl sm:text-6xl font-black text-indigo-950 tracking-tighter font-display leading-none mt-1 drop-shadow-[0_2px_12px_rgba(255,255,255,0.5)]">
             <AnimatedNumber value={score} useGrouping={false} />
           </span>
         </div>
 
         {/* Right: BEST with crown */}
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-end drop-shadow-md">
           <div className="flex items-center gap-1">
             <Crown className="w-3.5 h-3.5 text-[#F43F5E]" />
-            <span className="text-[11px] font-bold tracking-widest text-[#8C7A6B] uppercase font-display">
+            <span className="text-[11px] font-bold tracking-widest text-[#F43F5E]/80 uppercase font-display">
               BEST
             </span>
           </div>
-          <span className="text-2xl sm:text-3xl font-extrabold text-[#F43F5E] tracking-tight font-display leading-tight">
+          <span className="text-2xl sm:text-3xl font-extrabold text-[#F43F5E] tracking-tight font-display leading-tight drop-shadow-[0_2px_12px_rgba(255,255,255,0.5)]">
             <AnimatedNumber value={bestScore} />
           </span>
         </div>
@@ -677,13 +687,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         {/* Outer warm bezel container */}
         <div
           id="game-board-bezel"
-          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-[#FAF5EE] shadow-[0_10px_35px_rgba(0,0,0,0.08)] border border-[#E9DFD2]"
+          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50"
         >
           {/* Inner 8x8 Game Grid Container */}
           <div
             ref={boardRef}
             id="game-board-grid"
-            className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden"
+            className="relative w-full h-full rounded-2xl sm:rounded-[1.5rem] overflow-hidden shadow-inner"
           >
             {/* 1. PHOTO LAYER UNDERNEATH GRID (Continuous photo with softened filter ensuring white grid prominence) */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
