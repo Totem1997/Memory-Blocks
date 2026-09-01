@@ -1,56 +1,83 @@
 import { GridCell, Piece } from '../types';
 
 export const PIECE_COLORS = {
-  purple: {
-    name: 'purple',
-    primary: '#A855F7',
-    gradient: 'linear-gradient(135deg, #C084FC 0%, #9333EA 100%)',
-    border: '#7E22CE',
-    shadow: 'rgba(147, 51, 234, 0.4)',
+  ruby: {
+    name: 'ruby',
+    primary: '#E11D48',
+    top: '#FB7185',
+    left: '#F43F5E',
+    right: '#BE123C',
+    bottom: '#9F1239',
   },
-  yellow: {
-    name: 'yellow',
-    primary: '#FBBF24',
-    gradient: 'linear-gradient(135deg, #FDE047 0%, #F59E0B 100%)',
-    border: '#D97706',
-    shadow: 'rgba(245, 158, 11, 0.4)',
+  tangerine: {
+    name: 'tangerine',
+    primary: '#F97316',
+    top: '#FDBA74',
+    left: '#FB923C',
+    right: '#EA580C',
+    bottom: '#C2410C',
   },
-  coral: {
-    name: 'coral',
-    primary: '#F87171',
-    gradient: 'linear-gradient(135deg, #FCA5A5 0%, #EF4444 100%)',
-    border: '#DC2626',
-    shadow: 'rgba(239, 68, 68, 0.4)',
+  gold: {
+    name: 'gold',
+    primary: '#EAB308',
+    top: '#FDE047',
+    left: '#FACC15',
+    right: '#CA8A04',
+    bottom: '#A16207',
+  },
+  emerald: {
+    name: 'emerald',
+    primary: '#10B981',
+    top: '#6EE7B7',
+    left: '#34D399',
+    right: '#059669',
+    bottom: '#047857',
+  },
+  sapphire: {
+    name: 'sapphire',
+    primary: '#3B82F6',
+    top: '#93C5FD',
+    left: '#60A5FA',
+    right: '#2563EB',
+    bottom: '#1D4ED8',
+  },
+  amethyst: {
+    name: 'amethyst',
+    primary: '#8B5CF6',
+    top: '#C4B5FD',
+    left: '#A78BFA',
+    right: '#7C3AED',
+    bottom: '#6D28D9',
+  },
+  magenta: {
+    name: 'magenta',
+    primary: '#D946EF',
+    top: '#F0ABFC',
+    left: '#E879F9',
+    right: '#C026D3',
+    bottom: '#A21CAF',
   },
   cyan: {
     name: 'cyan',
-    primary: '#38BDF8',
-    gradient: 'linear-gradient(135deg, #7DD3FC 0%, #0284C7 100%)',
-    border: '#0369A1',
-    shadow: 'rgba(2, 132, 199, 0.4)',
-  },
-  blue: {
-    name: 'blue',
-    primary: '#60A5FA',
-    gradient: 'linear-gradient(135deg, #93C5FD 0%, #3B82F6 100%)',
-    border: '#1D4ED8',
-    shadow: 'rgba(59, 130, 246, 0.4)',
-  },
-  lime: {
-    name: 'lime',
-    primary: '#A3E635',
-    gradient: 'linear-gradient(135deg, #BEF264 0%, #84CC16 100%)',
-    border: '#65A30D',
-    shadow: 'rgba(132, 204, 22, 0.4)',
-  },
-  orange: {
-    name: 'orange',
-    primary: '#FB923C',
-    gradient: 'linear-gradient(135deg, #FDBA74 0%, #F97316 100%)',
-    border: '#EA580C',
-    shadow: 'rgba(249, 115, 22, 0.4)',
+    primary: '#06B6D4',
+    top: '#67E8F9',
+    left: '#22D3EE',
+    right: '#0891B2',
+    bottom: '#0E7490',
   },
 } as const;
+
+export function getPieceStyles(colorName: string, fallbackColor: string) {
+  const def = PIECE_COLORS[colorName as keyof typeof PIECE_COLORS];
+  if (!def) return { backgroundColor: fallbackColor };
+  return {
+    backgroundColor: def.primary,
+    borderTopColor: def.top,
+    borderLeftColor: def.left,
+    borderRightColor: def.right,
+    borderBottomColor: def.bottom,
+  };
+}
 
 export interface ShapeTemplate {
   shape: number[][];
@@ -61,54 +88,54 @@ export interface ShapeTemplate {
 
 const SHAPE_TEMPLATES: ShapeTemplate[] = [
   // DOT (Rescue only, highly penalized natural spawn)
-  { shape: [[1]], colorKey: 'orange', weight: 0.1, category: 'dot' },
+  { shape: [[1]], colorKey: 'tangerine', weight: 0.1, category: 'dot' },
 
   // SMALL BARS
-  { shape: [[1, 1]], colorKey: 'lime', weight: 3, category: 'small' },
-  { shape: [[1], [1]], colorKey: 'lime', weight: 3, category: 'small' },
+  { shape: [[1, 1]], colorKey: 'emerald', weight: 3, category: 'small' },
+  { shape: [[1], [1]], colorKey: 'emerald', weight: 3, category: 'small' },
 
   // BARS
   { shape: [[1, 1, 1]], colorKey: 'cyan', weight: 6, category: 'bar' },
   { shape: [[1], [1], [1]], colorKey: 'cyan', weight: 6, category: 'bar' },
-  { shape: [[1, 1, 1, 1]], colorKey: 'blue', weight: 5, category: 'bar' },
-  { shape: [[1], [1], [1], [1]], colorKey: 'blue', weight: 5, category: 'bar' },
-  { shape: [[1, 1, 1, 1, 1]], colorKey: 'blue', weight: 3, category: 'bar' },
-  { shape: [[1], [1], [1], [1], [1]], colorKey: 'blue', weight: 3, category: 'bar' },
+  { shape: [[1, 1, 1, 1]], colorKey: 'sapphire', weight: 5, category: 'bar' },
+  { shape: [[1], [1], [1], [1]], colorKey: 'sapphire', weight: 5, category: 'bar' },
+  { shape: [[1, 1, 1, 1, 1]], colorKey: 'sapphire', weight: 3, category: 'bar' },
+  { shape: [[1], [1], [1], [1], [1]], colorKey: 'sapphire', weight: 3, category: 'bar' },
 
   // BLOCKS
-  { shape: [[1, 1], [1, 1]], colorKey: 'yellow', weight: 7, category: 'block' },
-  { shape: [[1, 1], [1, 1], [1, 1]], colorKey: 'coral', weight: 3, category: 'block' },
-  { shape: [[1, 1, 1], [1, 1, 1]], colorKey: 'coral', weight: 3, category: 'block' },
-  { shape: [[1, 1, 1], [1, 1, 1], [1, 1, 1]], colorKey: 'yellow', weight: 1.5, category: 'block' },
+  { shape: [[1, 1], [1, 1]], colorKey: 'gold', weight: 7, category: 'block' },
+  { shape: [[1, 1], [1, 1], [1, 1]], colorKey: 'ruby', weight: 3, category: 'block' },
+  { shape: [[1, 1, 1], [1, 1, 1]], colorKey: 'ruby', weight: 3, category: 'block' },
+  { shape: [[1, 1, 1], [1, 1, 1], [1, 1, 1]], colorKey: 'gold', weight: 1.5, category: 'block' },
 
   // COMPLEX (Corners, Ls, Ts)
   // 2x2 corners
-  { shape: [[1, 1], [1, 0]], colorKey: 'lime', weight: 4, category: 'complex' },
-  { shape: [[1, 1], [0, 1]], colorKey: 'lime', weight: 4, category: 'complex' },
-  { shape: [[1, 0], [1, 1]], colorKey: 'lime', weight: 4, category: 'complex' },
-  { shape: [[0, 1], [1, 1]], colorKey: 'lime', weight: 4, category: 'complex' },
+  { shape: [[1, 1], [1, 0]], colorKey: 'emerald', weight: 4, category: 'complex' },
+  { shape: [[1, 1], [0, 1]], colorKey: 'emerald', weight: 4, category: 'complex' },
+  { shape: [[1, 0], [1, 1]], colorKey: 'emerald', weight: 4, category: 'complex' },
+  { shape: [[0, 1], [1, 1]], colorKey: 'emerald', weight: 4, category: 'complex' },
 
   // 3x2 L-shape
-  { shape: [[1, 0], [1, 0], [1, 1]], colorKey: 'purple', weight: 4, category: 'complex' },
-  { shape: [[0, 1], [0, 1], [1, 1]], colorKey: 'purple', weight: 4, category: 'complex' },
-  { shape: [[1, 1], [1, 0], [1, 0]], colorKey: 'purple', weight: 4, category: 'complex' },
-  { shape: [[1, 1], [0, 1], [0, 1]], colorKey: 'purple', weight: 4, category: 'complex' },
-  { shape: [[1, 1, 1], [1, 0, 0]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[1, 1, 1], [0, 0, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[1, 0, 0], [1, 1, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[0, 0, 1], [1, 1, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
+  { shape: [[1, 0], [1, 0], [1, 1]], colorKey: 'amethyst', weight: 4, category: 'complex' },
+  { shape: [[0, 1], [0, 1], [1, 1]], colorKey: 'amethyst', weight: 4, category: 'complex' },
+  { shape: [[1, 1], [1, 0], [1, 0]], colorKey: 'amethyst', weight: 4, category: 'complex' },
+  { shape: [[1, 1], [0, 1], [0, 1]], colorKey: 'amethyst', weight: 4, category: 'complex' },
+  { shape: [[1, 1, 1], [1, 0, 0]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[1, 1, 1], [0, 0, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[1, 0, 0], [1, 1, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[0, 0, 1], [1, 1, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
 
   // Big 3x3 L-shape
-  { shape: [[1, 0, 0], [1, 0, 0], [1, 1, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[0, 0, 1], [0, 0, 1], [1, 1, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[1, 1, 1], [1, 0, 0], [1, 0, 0]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[1, 1, 1], [0, 0, 1], [0, 0, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
+  { shape: [[1, 0, 0], [1, 0, 0], [1, 1, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[0, 0, 1], [0, 0, 1], [1, 1, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[1, 1, 1], [1, 0, 0], [1, 0, 0]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[1, 1, 1], [0, 0, 1], [0, 0, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
 
   // 3x2 T-shape
-  { shape: [[1, 1, 1], [0, 1, 0]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[0, 1, 0], [1, 1, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[1, 0], [1, 1], [1, 0]], colorKey: 'purple', weight: 3, category: 'complex' },
-  { shape: [[0, 1], [1, 1], [0, 1]], colorKey: 'purple', weight: 3, category: 'complex' },
+  { shape: [[1, 1, 1], [0, 1, 0]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[0, 1, 0], [1, 1, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[1, 0], [1, 1], [1, 0]], colorKey: 'amethyst', weight: 3, category: 'complex' },
+  { shape: [[0, 1], [1, 1], [0, 1]], colorKey: 'amethyst', weight: 3, category: 'complex' },
 ];
 
 export function canPlacePiece(
@@ -414,9 +441,19 @@ export function generatePieceTray(
   // Shuffle the final tray so the "best" piece isn't predictably always in slot 1
   finalTray = finalTray.sort(() => Math.random() - 0.5);
 
-  // Re-assign IDs for React keys
-  return finalTray.map((p, idx) => ({
-     ...p,
-     id: `piece_${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${idx}`
-  }));
+  // Pick N distinct colors from PIECE_COLORS for the tray pieces
+  const allColorKeys = Object.keys(PIECE_COLORS) as Array<keyof typeof PIECE_COLORS>;
+  const shuffledColors = [...allColorKeys].sort(() => Math.random() - 0.5);
+
+  // Re-assign IDs and unique vibrant colors
+  return finalTray.map((p, idx) => {
+     const assignedColorKey = shuffledColors[idx % shuffledColors.length];
+     const colorObj = PIECE_COLORS[assignedColorKey];
+     return {
+       ...p,
+       color: colorObj.primary,
+       colorName: assignedColorKey,
+       id: `piece_${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${idx}`
+     };
+  });
 }

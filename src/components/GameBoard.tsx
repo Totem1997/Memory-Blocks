@@ -7,6 +7,7 @@ import {
   generatePieceTray,
   hasAnyValidMove,
   PIECE_COLORS,
+  getPieceStyles,
 } from '../utils/pieces';
 import {
   isRewardOnCooldown,
@@ -279,7 +280,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               clearedCells.set(`${r},${c}`, {
                 r,
                 c,
-                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
+                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.primary || cell.color,
               });
             }
           }
@@ -291,7 +292,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               clearedCells.set(`${r},${c}`, {
                 r,
                 c,
-                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
+                color: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.primary || cell.color,
               });
             }
           }
@@ -687,7 +688,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         {/* Outer warm bezel container */}
         <div
           id="game-board-bezel"
-          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/50"
+          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white/40 backdrop-blur-2xl shadow-[0_16px_40px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.8)] border-2 border-white"
         >
           {/* Inner 8x8 Game Grid Container */}
           <div
@@ -774,9 +775,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                             }
                             ${isPreviewClear && ghostPiece ? 'rainbow-overlay z-20 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : ''}
                           `}
-                          style={{
-                            background: PIECE_COLORS[cell.colorName as keyof typeof PIECE_COLORS]?.gradient || cell.color,
-                          }}
+                          style={getPieceStyles(cell.colorName, cell.color)}
                         />
                       )}
 
@@ -786,11 +785,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                           className={`w-full h-full block-tile-ghost z-10 ${
                             isPreviewClear ? 'opacity-100 block-tile rainbow-overlay z-20 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'opacity-75 animate-pulse-subtle'
                           }`}
-                          style={{
-                            background:
-                              PIECE_COLORS[ghostPiece.colorName as keyof typeof PIECE_COLORS]?.gradient ||
-                              ghostPiece.color,
-                          }}
+                          style={getPieceStyles(ghostPiece.colorName, ghostPiece.color)}
                         />
                       )}
                     </div>
@@ -875,7 +870,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               >
                 {/* Piece shape grid representation */}
                 <div
-                  className="grid gap-0 pointer-events-none"
+                  className="grid gap-0 pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
                   style={{
                     gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
                     gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
@@ -888,12 +883,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                         className={`w-5 h-5 sm:w-6 sm:h-6 ${
                           val === 1 ? 'block-tile' : 'opacity-0'
                         }`}
-                        style={{
-                          background:
-                            val === 1
-                              ? PIECE_COLORS[piece.colorName as keyof typeof PIECE_COLORS]?.gradient || piece.color
-                              : 'transparent',
-                        }}
+                        style={
+                          val === 1
+                            ? getPieceStyles(piece.colorName, piece.color)
+                            : { backgroundColor: 'transparent' }
+                        }
                       />
                     ))
                   )}
@@ -936,10 +930,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                       style={{
                         width: `${cellSize}px`,
                         height: `${cellSize}px`,
-                        background:
-                          val === 1
-                            ? PIECE_COLORS[piece.colorName as keyof typeof PIECE_COLORS]?.gradient || piece.color
-                            : 'transparent',
+                        ...(val === 1
+                          ? getPieceStyles(piece.colorName, piece.color)
+                          : { backgroundColor: 'transparent' }),
                       }}
                     />
                   ))
