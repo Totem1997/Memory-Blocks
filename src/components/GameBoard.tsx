@@ -710,13 +710,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 src={photoSrc}
                 alt="Personal memory background"
                 className="w-full h-full object-cover pointer-events-none select-none"
-                style={{
-                  filter: 'contrast(0.86) brightness(0.97) saturate(0.88)',
-                }}
                 referrerPolicy="no-referrer"
               />
-              {/* Subtle tone stabilizer so white grid lines stay strikingly prominent across all photo types */}
-              <div className="absolute inset-0 bg-stone-900/10 pointer-events-none mix-blend-multiply" />
+              {/* Very slight dark overlay to ensure grid lines remain visible on bright/white photos */}
+              <div className="absolute inset-0 bg-black/10 pointer-events-none" />
             </div>
 
             {/* 2. STRAIGHT GRIDLINES LAYER */}
