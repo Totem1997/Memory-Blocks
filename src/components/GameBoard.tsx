@@ -26,6 +26,7 @@ import { getStoredItem, setStoredItem } from '../utils/storage';
 import { RewardModal } from './RewardModal';
 import { PauseModal } from './PauseModal';
 import { GameOverModal } from './GameOverModal';
+import { BACKGROUND_THEMES } from '../utils/themes';
 
 interface GameBoardProps {
   photoSrc: string;
@@ -48,17 +49,20 @@ interface ExplosionParticle {
 function AnimatedNumber({ value, useGrouping = true }: { value: number; useGrouping?: boolean }) {
   const [displayValue, setDisplayValue] = useState(value);
   const [isRolling, setIsRolling] = useState(false);
-  const prevValue = useRef(value);
+  const currentDisplayValue = useRef(value);
 
   useEffect(() => {
-    if (value === prevValue.current) return;
+    if (value === currentDisplayValue.current) {
+      setIsRolling(false);
+      return;
+    }
     
     setIsRolling(true);
 
     // Animate number rolling
     const duration = 2000; // ms
     const startTime = performance.now();
-    const startValue = prevValue.current;
+    const startValue = currentDisplayValue.current;
     const endValue = value;
     let rafId: number;
 
@@ -69,7 +73,9 @@ function AnimatedNumber({ value, useGrouping = true }: { value: number; useGroup
       // easeOutCubic
       const easeProgress = 1 - Math.pow(1 - progress, 3);
       
-      setDisplayValue(Math.round(startValue + (endValue - startValue) * easeProgress));
+      const currentVal = Math.round(startValue + (endValue - startValue) * easeProgress);
+      setDisplayValue(currentVal);
+      currentDisplayValue.current = currentVal;
 
       if (progress < 1) {
         rafId = requestAnimationFrame(animateNumber);
@@ -79,10 +85,10 @@ function AnimatedNumber({ value, useGrouping = true }: { value: number; useGroup
     };
     
     rafId = requestAnimationFrame(animateNumber);
-    prevValue.current = value;
 
     return () => {
       cancelAnimationFrame(rafId);
+      setIsRolling(false);
     };
   }, [value]);
 
@@ -128,6 +134,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   // Modals & Popups
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
+  
+  // Background Theme
+  const [bgThemeId, setBgThemeId] = useState<string>(() => {
+    return getStoredItem('bg-theme') || 'teal';
+  });
+  const currentBgTheme = BACKGROUND_THEMES.find(t => t.id === bgThemeId) || BACKGROUND_THEMES[0];
   const [clearingLines, setClearingLines] = useState<{ rows: number[]; cols: number[] }>({
     rows: [],
     cols: [],
@@ -601,15 +613,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {/* Blurred Photo Background Layer */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-black/5">
-        <img
-          src={photoSrc}
-          alt="Blurred Background"
-          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
-          referrerPolicy="no-referrer"
-        />
-      </div>
+      {/* Gradient Background Layer */}
+      <div 
+        className="fixed inset-0 z-[-1] pointer-events-none transition-colors duration-500 ease-in-out"
+        style={{ background: currentBgTheme.gradient }}
+      />
 
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
       <header className="flex items-center justify-between w-full pt-1 px-2">
@@ -946,6 +954,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       {/* PAUSE MODAL */}
       <PauseModal
         isOpen={isPaused}
+        currentBgTheme={bgThemeId}
+        onThemeChange={(themeId) => {
+          setBgThemeId(themeId);
+          setStoredItem('bg-theme', themeId);
+        }}
         onResume={() => setIsPaused(false)}
         onRestart={() => {
           setIsPaused(false);
