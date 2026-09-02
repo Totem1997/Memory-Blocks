@@ -3,24 +3,28 @@ import remindersData from '../data/Reminders_Rewards.json';
 import { AudienceType, RewardItem } from '../types';
 import { getStoredItem, setStoredItem } from './storage';
 
-const COOLDOWN_DURATION_MS = 3 * 60 * 1000; // 3 minutes
+const COOLDOWN_DURATION_MS = 5 * 60 * 60 * 1000; // 5 hours
+
+const KID_HYPE_MESSAGES = [
+  { id: 'hype_1', content: 'You are super awesome! Have a great day!' },
+  { id: 'hype_2', content: 'Don\'t forget to drink some water so you can grow strong!' },
+  { id: 'hype_3', content: 'Did you do something kind for someone today?' },
+  { id: 'hype_4', content: 'A smile is contagious, pass it on!' },
+  { id: 'hype_5', content: 'You can do anything you put your mind to!' },
+];
 
 export function getRewardsForAudience(audience: AudienceType): RewardItem[] {
   if (audience === 'child') {
-    return funfactsData.map((item) => ({
+    const facts = funfactsData.map((item) => ({
       id: item.id,
       content: item.funfact,
     }));
+    return [...facts, ...KID_HYPE_MESSAGES];
   }
   return remindersData.map((item) => ({
     id: item.id,
     content: item.reminder,
   }));
-}
-
-export async function isRewardOnCooldown(): Promise<boolean> {
-  const cooldownUntil = await getStoredItem<number>('cooldownUntil', 0);
-  return Date.now() < cooldownUntil;
 }
 
 export async function getNextReward(audience: AudienceType): Promise<RewardItem> {
@@ -30,7 +34,7 @@ export async function getNextReward(audience: AudienceType): Promise<RewardItem>
   // Filter out rewards that have already been used
   let availableRewards = allRewards.filter((r) => !usedIds.includes(r.id));
 
-  // If all 50 rewards exhausted, reset cycle!
+  // If all rewards exhausted, reset cycle!
   if (availableRewards.length === 0) {
     usedIds = [];
     availableRewards = allRewards;
@@ -47,8 +51,25 @@ export async function getNextReward(audience: AudienceType): Promise<RewardItem>
   return selectedReward;
 }
 
-export async function startRewardCooldown(): Promise<number> {
-  const expiresAt = Date.now() + COOLDOWN_DURATION_MS;
-  await setStoredItem('cooldownUntil', expiresAt);
-  return expiresAt;
+export async function checkWelcomeBackEligibility(): Promise<boolean> {
+  const firstOpenStr = await getStoredItem<number | null>('first_app_open_time', null);
+  const now = Date.now();
+
+  // If first time opening app ever
+  if (!firstOpenStr) {
+    await setStoredItem('first_app_open_time', now);
+    // Initialize last seen to now, so they must wait 5 hours from first open
+    await setStoredItem('last_welcome_message_time', now);
+    return false;
+  }
+
+  const lastSeen = await getStoredItem<number>('last_welcome_message_time', 0);
+  if (now - lastSeen >= COOLDOWN_DURATION_MS) {
+    return true;
+  }
+  return false;
+}
+
+export async function markWelcomeMessageSeen(): Promise<void> {
+  await setStoredItem('last_welcome_message_time', Date.now());
 }

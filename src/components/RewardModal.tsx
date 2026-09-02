@@ -19,7 +19,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
   if (!isOpen || !reward) return null;
 
   const isChild = audience === 'child';
-  const heading = isChild ? 'FUN FACT!' : 'A Little Reminder';
+  const heading = 'Welcome Back!';
 
   return (
     <AnimatePresence>
@@ -53,12 +53,12 @@ export const RewardModal: React.FC<RewardModalProps> = ({
             )}
           </div>
 
-          <h3 className="text-xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
+          <h3 className="text-2xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
             {heading}
           </h3>
 
           {/* Clean reading card */}
-          <div className="p-4 rounded-2xl bg-white/80 border border-[#EAE1D7] text-[#4A423A] text-base leading-relaxed font-medium mb-6 shadow-xs">
+          <div className="p-4 rounded-2xl bg-white/80 border border-[#EAE1D7] text-[#4A423A] text-lg leading-relaxed font-medium mb-6 shadow-xs">
             &ldquo;{reward.content}&rdquo;
           </div>
 
@@ -66,9 +66,9 @@ export const RewardModal: React.FC<RewardModalProps> = ({
           <button
             id="btn-reward-keep-playing"
             onClick={onClose}
-            className="w-full py-3.5 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all font-display tracking-wide cursor-pointer"
+            className="w-full py-3.5 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all font-display uppercase tracking-wide cursor-pointer"
           >
-            KEEP PLAYING
+            CONTINUE PLAYING
           </button>
         </motion.div>
       </div>

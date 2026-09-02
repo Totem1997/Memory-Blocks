@@ -10,9 +10,9 @@ import {
   getPieceStyles,
 } from '../utils/pieces';
 import {
-  isRewardOnCooldown,
+  checkWelcomeBackEligibility,
   getNextReward,
-  startRewardCooldown,
+  markWelcomeMessageSeen,
 } from '../utils/rewards';
 import {
   playPickupSound,
@@ -142,9 +142,23 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [particles, setParticles] = useState<ExplosionParticle[]>([]);
 
   // Reward state
-  const [rewardPopupAvailable, setRewardPopupAvailable] = useState(false);
+  const [showWelcomeNotification, setShowWelcomeNotification] = useState(false);
   const [currentReward, setCurrentReward] = useState<{ id: string; content: string } | null>(null);
   const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+
+  // Check for welcome back eligibility on initial mount
+  useEffect(() => {
+    checkWelcomeBackEligibility().then(eligible => {
+      if (eligible) {
+        // Wait a second for the board to finish loading in
+        const timer = setTimeout(() => {
+          setShowWelcomeNotification(true);
+          playRewardSound();
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    });
+  }, []);
 
   // Dragging state
   const [activeDragIndex, setActiveDragIndex] = useState<number | null>(null);
@@ -182,7 +196,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     setIsGameOver(false);
     setClearingLines({ rows: [], cols: [] });
     setScorePopups([]);
-    setRewardPopupAvailable(false);
+    setShowWelcomeNotification(false);
     setTurnsCount(0);
     const initialPieces = generatePieceTray(3, freshBoard, 0);
     setTrayPieces(initialPieces);
@@ -358,26 +372,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             showScorePopup('PERFECT CLEAR! +500', rect.width / 2, rect.height / 2 - 20, 'board-clear');
           }
           addScore(500);
-
-          // Check reward cooldown (3 minutes, Section 28)
-          const onCooldown = await isRewardOnCooldown();
-          if (!onCooldown) {
-            // Reward eligible! Show small reward notification popup (Section 23)
-            playRewardSound();
-            setRewardPopupAvailable(true);
-          }
         }
       }, 240);
     },
     [addScore, showScorePopup]
   );
 
-  // Trigger reward modal when player clicks OPEN REWARD
-  const handleOpenReward = async () => {
+  // Trigger reward modal when player clicks the Welcome Back popup
+  const handleOpenWelcomeMessage = async () => {
     const reward = await getNextReward(audience);
-    await startRewardCooldown();
+    await markWelcomeMessageSeen();
     setCurrentReward(reward);
-    setRewardPopupAvailable(false);
+    setShowWelcomeNotification(false);
     setIsRewardModalOpen(true);
   };
 
@@ -653,39 +659,38 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         </div>
       </header>
 
-      {/* REWARD NOTIFICATION POPUP (Sections 23, 24, 30) */}
-      {/* Appears ONLY when earned after clearing the entire board. Never permanently visible! */}
+      {/* WELCOME NOTIFICATION POPUP */}
       <AnimatePresence>
-        {rewardPopupAvailable && (
-          <motion.div
-            id="reward-notification-banner"
-            initial={{ y: -30, opacity: 0, scale: 0.9 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: -20, opacity: 0, scale: 0.9 }}
-            className="w-full my-2 p-3 bg-gradient-to-r from-[#FFF5EB] to-[#FFF0F5] border border-[#FBCFE8] rounded-2xl shadow-lg flex items-center justify-between z-30"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#F43F5E] text-white flex items-center justify-center shadow-xs">
-                <Gift className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <div className="text-xs font-bold text-[#2D2A26] font-display">
-                  You earned a little reward!
-                </div>
-                <div className="text-[10px] text-[#8C7A6B]">
-                  For completely clearing the board
-                </div>
-              </div>
-            </div>
-
-            <button
-              id="btn-open-reward"
-              onClick={handleOpenReward}
-              className="py-1.5 px-3.5 bg-[#2D2A26] hover:bg-[#1A1816] text-white text-xs font-bold rounded-xl shadow-xs active:scale-95 transition-all font-display uppercase tracking-wider cursor-pointer"
+        {showWelcomeNotification && (
+          <div className="absolute inset-0 z-40 flex items-center justify-center p-6 bg-black/20 backdrop-blur-sm">
+            <motion.div
+              id="welcome-notification-banner"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="w-full max-w-sm p-5 bg-[#FAF7F2] border border-[#E8DFC8] rounded-3xl shadow-2xl flex flex-col items-center text-center z-50"
             >
-              OPEN REWARD
-            </button>
-          </motion.div>
+              <div className="w-14 h-14 mb-3 rounded-2xl bg-[#F4E9D8] text-[#2D2A26] flex items-center justify-center shadow-inner">
+                {audience === 'child' ? <Sparkles className="w-7 h-7 text-[#F59E0B]" /> : <Gift className="w-7 h-7 text-[#E11D48]" />}
+              </div>
+              <div className="mb-4">
+                <div className="text-xl font-extrabold text-[#2D2A26] font-display mb-1">
+                  Welcome back!
+                </div>
+                <div className="text-sm font-medium text-[#8C7A6B]">
+                  You have a new message waiting for you.
+                </div>
+              </div>
+              <button
+                id="btn-open-welcome-message"
+                onClick={handleOpenWelcomeMessage}
+                className="w-full py-3.5 px-6 bg-[#2D2A26] hover:bg-[#1A1816] text-white text-sm font-bold rounded-xl shadow-md active:scale-[0.98] transition-all font-display uppercase tracking-wider cursor-pointer"
+              >
+                OPEN MESSAGE
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
