@@ -713,7 +713,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 referrerPolicy="no-referrer"
               />
               {/* Very slight dark overlay to ensure grid lines remain visible on bright/white photos */}
-              <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+              <div className="absolute inset-0 bg-black/[0.15] pointer-events-none" />
             </div>
 
             {/* 2. STRAIGHT GRIDLINES LAYER */}
