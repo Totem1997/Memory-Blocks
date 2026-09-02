@@ -26,7 +26,6 @@ import { getStoredItem, setStoredItem } from '../utils/storage';
 import { RewardModal } from './RewardModal';
 import { PauseModal } from './PauseModal';
 import { GameOverModal } from './GameOverModal';
-import { BACKGROUND_THEMES } from '../utils/themes';
 
 interface GameBoardProps {
   photoSrc: string;
@@ -135,11 +134,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   
-  // Background Theme
-  const [bgThemeId, setBgThemeId] = useState<string>(() => {
-    return getStoredItem('bg-theme') || 'teal';
-  });
-  const currentBgTheme = BACKGROUND_THEMES.find(t => t.id === bgThemeId) || BACKGROUND_THEMES[0];
   const [clearingLines, setClearingLines] = useState<{ rows: number[]; cols: number[] }>({
     rows: [],
     cols: [],
@@ -613,11 +607,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {/* Gradient Background Layer */}
-      <div 
-        className="fixed inset-0 z-[-1] pointer-events-none transition-colors duration-500 ease-in-out"
-        style={{ background: currentBgTheme.gradient }}
-      />
+      {/* Blurred Photo Background Layer */}
+      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-black/5">
+        <img
+          src={photoSrc}
+          alt="Blurred Background"
+          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
+          referrerPolicy="no-referrer"
+        />
+      </div>
 
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
       <header className="flex items-center justify-between w-full pt-1 px-2">
@@ -951,11 +949,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       {/* PAUSE MODAL */}
       <PauseModal
         isOpen={isPaused}
-        currentBgTheme={bgThemeId}
-        onThemeChange={(themeId) => {
-          setBgThemeId(themeId);
-          setStoredItem('bg-theme', themeId);
-        }}
         onResume={() => setIsPaused(false)}
         onRestart={() => {
           setIsPaused(false);

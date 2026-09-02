@@ -2,7 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Image as ImageIcon, Volume2, VolumeX, X } from 'lucide-react';
 import { isSoundEnabled, setSoundEnabled } from '../utils/audio';
-import { BACKGROUND_THEMES, BgTheme } from '../utils/themes';
 
 interface PauseModalProps {
   isOpen: boolean;
@@ -10,8 +9,6 @@ interface PauseModalProps {
   onRestart: () => void;
   onChangeMemory: () => void;
   onClose: () => void;
-  currentBgTheme: string;
-  onThemeChange: (themeId: string) => void;
 }
 
 export const PauseModal: React.FC<PauseModalProps> = ({
@@ -20,8 +17,6 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onRestart,
   onChangeMemory,
   onClose,
-  currentBgTheme,
-  onThemeChange,
 }) => {
   const [sound, setSound] = React.useState(isSoundEnabled());
 
@@ -59,59 +54,36 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             Game Paused
           </h3>
 
-          <div className="space-y-4">
-            <div className="space-y-2.5">
-              {/* Resume button */}
-              <button
-                id="btn-pause-resume"
-                onClick={onResume}
-                className="w-full py-3.5 px-4 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
-              >
-                <Play className="w-4 h-4 fill-white" />
-                <span>Resume</span>
-              </button>
+          <div className="space-y-2.5">
+            {/* Resume button */}
+            <button
+              id="btn-pause-resume"
+              onClick={onResume}
+              className="w-full py-3.5 px-4 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
+            >
+              <Play className="w-4 h-4 fill-white" />
+              <span>Resume</span>
+            </button>
 
-              {/* Restart button */}
-              <button
-                id="btn-pause-restart"
-                onClick={onRestart}
-                className="w-full py-3.5 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#2D2A26] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5DACE] cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4 text-[#8C7A6B]" />
-                <span>Restart Run</span>
-              </button>
+            {/* Restart button */}
+            <button
+              id="btn-pause-restart"
+              onClick={onRestart}
+              className="w-full py-3.5 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#2D2A26] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5DACE] cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4 text-[#8C7A6B]" />
+              <span>Restart Run</span>
+            </button>
 
-              {/* Change memory button */}
-              <button
-                id="btn-pause-change-memory"
-                onClick={onChangeMemory}
-                className="w-full py-3 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
-              >
-                <ImageIcon className="w-3.5 h-3.5 text-[#8C7A6B]" />
-                <span>Change Photo Memory</span>
-              </button>
-            </div>
-
-            {/* Theme Selector */}
-            <div className="pt-2 border-t border-[#E8DFC8]">
-              <p className="text-xs font-semibold text-[#8C7A6B] mb-3 uppercase tracking-wider">
-                Theme Color
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                {BACKGROUND_THEMES.map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => onThemeChange(theme.id)}
-                    className={`w-8 h-8 rounded-full transition-transform cursor-pointer ${
-                      currentBgTheme === theme.id ? 'scale-125 ring-2 ring-offset-2 ring-[#2D2A26]' : 'hover:scale-110'
-                    }`}
-                    style={{ background: theme.color }}
-                    title={theme.name}
-                    aria-label={`Select ${theme.name} theme`}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Change memory button */}
+            <button
+              id="btn-pause-change-memory"
+              onClick={onChangeMemory}
+              className="w-full py-3 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-[#8C7A6B]" />
+              <span>Change Photo Memory</span>
+            </button>
 
             {/* Sound Toggle */}
             <div className="pt-2">
