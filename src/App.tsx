@@ -58,8 +58,9 @@ export default function App() {
   const handleCropConfirmed = async (croppedDataUrl: string) => {
     setActivePhoto(croppedDataUrl);
     setHasSavedPhoto(true);
-    // Persist cropped photo in IndexedDB
+    // Persist cropped photo and reset background theme
     await setStoredItem('photo', croppedDataUrl);
+    await setStoredItem('bg-theme', 'blur');
     setCurrentScreen('creating');
   };
 

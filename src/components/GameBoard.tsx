@@ -26,6 +26,7 @@ import { getStoredItem, setStoredItem } from '../utils/storage';
 import { RewardModal } from './RewardModal';
 import { PauseModal } from './PauseModal';
 import { GameOverModal } from './GameOverModal';
+import { BACKGROUND_THEMES } from '../utils/bgThemes';
 
 interface GameBoardProps {
   photoSrc: string;
@@ -134,6 +135,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   
+  // Background Theme
+  const [bgThemeId, setBgThemeId] = useState<string>(() => {
+    // Cannot be async here, fallback to local storage synchronously if needed or just wait.
+    // wait, getStoredItem is async!
+    // useState(() => ...) with an async function returns a Promise to the state!
+    // I need to use useEffect to load the bg-theme properly, or use localStorage directly for synchronous init.
+    const syncVal = localStorage.getItem('mb_bg-theme');
+    if (syncVal) {
+      try { return JSON.parse(syncVal); } catch {}
+    }
+    return 'blur';
+  });
+  const currentBgTheme = BACKGROUND_THEMES.find(t => t.id === bgThemeId) || BACKGROUND_THEMES[0];
+
   const [clearingLines, setClearingLines] = useState<{ rows: number[]; cols: number[] }>({
     rows: [],
     cols: [],
@@ -613,14 +628,29 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      {/* Blurred Photo Background Layer */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-black/5">
-        <img
-          src={photoSrc}
-          alt="Blurred Background"
-          className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
-          referrerPolicy="no-referrer"
-        />
+      {/* Background Layer (Blur or Solid Color) */}
+      <div 
+        className="fixed inset-0 z-[-1] pointer-events-none transition-colors duration-500 ease-in-out"
+        style={{ backgroundColor: currentBgTheme.type === 'color' ? currentBgTheme.color : 'transparent' }}
+      >
+        <AnimatePresence>
+          {currentBgTheme.type === 'blur' && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 overflow-hidden bg-black/5"
+            >
+              <img
+                src={photoSrc}
+                alt="Blurred Background"
+                className="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
+                referrerPolicy="no-referrer"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
@@ -954,6 +984,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       {/* PAUSE MODAL */}
       <PauseModal
         isOpen={isPaused}
+        currentBgTheme={bgThemeId}
+        onThemeChange={(themeId) => {
+          setBgThemeId(themeId);
+          setStoredItem('bg-theme', themeId);
+        }}
         onResume={() => setIsPaused(false)}
         onRestart={() => {
           setIsPaused(false);

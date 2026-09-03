@@ -11,6 +11,9 @@ interface StoredData {
   bestScore?: number;
   usedRewardIds?: string[];
   cooldownUntil?: number;
+  'bg-theme'?: string;
+  first_app_open_time?: number;
+  last_welcome_message_time?: number;
 }
 
 // In-memory fallback

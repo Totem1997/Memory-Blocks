@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Image as ImageIcon, Volume2, VolumeX, X } from 'lucide-react';
 import { isSoundEnabled, setSoundEnabled } from '../utils/audio';
+import { BACKGROUND_THEMES } from '../utils/bgThemes';
 
 interface PauseModalProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ interface PauseModalProps {
   onRestart: () => void;
   onChangeMemory: () => void;
   onClose: () => void;
+  currentBgTheme: string;
+  onThemeChange: (themeId: string) => void;
 }
 
 export const PauseModal: React.FC<PauseModalProps> = ({
@@ -17,6 +20,8 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onRestart,
   onChangeMemory,
   onClose,
+  currentBgTheme,
+  onThemeChange,
 }) => {
   const [sound, setSound] = React.useState(isSoundEnabled());
 
@@ -85,8 +90,29 @@ export const PauseModal: React.FC<PauseModalProps> = ({
               <span>Change Photo Memory</span>
             </button>
 
+            {/* Theme Selector */}
+            <div className="pt-4 pb-2 border-t border-[#E8DFC8]">
+              <p className="text-xs font-semibold text-[#8C7A6B] mb-3 uppercase tracking-wider">
+                Background Theme
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                {BACKGROUND_THEMES.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => onThemeChange(theme.id)}
+                    className={`w-8 h-8 rounded-full border border-black/10 transition-transform shadow-sm cursor-pointer ${
+                      currentBgTheme === theme.id ? 'scale-125 ring-2 ring-offset-2 ring-[#2D2A26]' : 'hover:scale-110'
+                    }`}
+                    style={{ background: theme.swatchBackground || theme.color }}
+                    title={theme.name}
+                    aria-label={`Select ${theme.name} theme`}
+                  />
+                ))}
+              </div>
+            </div>
+
             {/* Sound Toggle */}
-            <div className="pt-2">
+            <div className="pt-4 border-t border-[#E8DFC8]">
               <button
                 id="btn-pause-toggle-sound"
                 onClick={toggleSound}
