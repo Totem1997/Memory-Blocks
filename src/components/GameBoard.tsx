@@ -729,7 +729,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         {/* Outer warm bezel container */}
         <div
           id="game-board-bezel"
-          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white/40 backdrop-blur-2xl shadow-[0_16px_40px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.8)] border-2 border-white"
+          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white shadow-[12px_16px_24px_-8px_rgba(0,0,0,0.6),0_4px_8px_rgba(0,0,0,0.1)] ring-1 ring-black/5"
         >
           {/* Inner 8x8 Game Grid Container */}
           <div
@@ -908,7 +908,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               >
                 {/* Piece shape grid representation */}
                 <div
-                  className="grid gap-0 pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.35)]"
+                  className="grid gap-0 pointer-events-none drop-shadow-[4px_6px_6px_rgba(0,0,0,0.55)]"
                   style={{
                     gridTemplateRows: `repeat(${piece.height}, minmax(0, 1fr))`,
                     gridTemplateColumns: `repeat(${piece.width}, minmax(0, 1fr))`,
@@ -952,7 +952,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               : 38;
             return (
               <div
-                className="grid gap-0 drop-shadow-[0_12px_28px_rgba(0,0,0,0.38)] w-max flex-shrink-0"
+                className="grid gap-0 drop-shadow-[12px_18px_16px_rgba(0,0,0,0.55)] w-max flex-shrink-0"
                 style={{
                   gridTemplateRows: `repeat(${piece.height}, ${cellSize}px)`,
                   gridTemplateColumns: `repeat(${piece.width}, ${cellSize}px)`,

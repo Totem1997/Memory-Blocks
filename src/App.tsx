@@ -60,7 +60,7 @@ export default function App() {
     setHasSavedPhoto(true);
     // Persist cropped photo and reset background theme
     await setStoredItem('photo', croppedDataUrl);
-    await setStoredItem('bg-theme', 'blur');
+    await setStoredItem('bg-theme', 'minimalist-white');
     setCurrentScreen('creating');
   };
 
