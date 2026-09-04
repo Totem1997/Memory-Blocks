@@ -6,7 +6,7 @@ export type AudienceType = 'adult' | 'child';
 
 export type ThemeType = 'birthday' | 'christmas' | 'general' | 'friendship';
 
-export type AppScreen = 'welcome' | 'choose-photo' | 'crop-photo' | 'reassurance' | 'creating' | 'game';
+export type AppScreen = 'initializing' | 'home' | 'welcome' | 'choose-photo' | 'crop-photo' | 'reassurance' | 'creating' | 'game';
 
 export interface GridCell {
   color: string;

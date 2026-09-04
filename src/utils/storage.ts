@@ -120,3 +120,9 @@ export async function setStoredItem<T>(key: keyof StoredData, value: T): Promise
 export async function clearStoredPhoto(): Promise<void> {
   await setStoredItem('photo', null);
 }
+
+export async function clearAllData(): Promise<void> {
+  await setStoredItem('photo', null);
+  await setStoredItem('bestScore', null);
+  await setStoredItem('bg-theme', null);
+}

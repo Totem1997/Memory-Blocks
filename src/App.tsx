@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AppScreen, AudienceType, ThemeConfig, ThemeType } from './types';
 import { parseAppConfig } from './utils/config';
-import { getStoredItem, setStoredItem } from './utils/storage';
+import { getStoredItem, setStoredItem, clearAllData } from './utils/storage';
 import { WelcomeScreen } from './components/WelcomeScreen';
+import { HomeScreen } from './components/HomeScreen';
 import { ChoosePhotoScreen } from './components/ChoosePhotoScreen';
 import { CropPhotoScreen } from './components/CropPhotoScreen';
 import { ReassuranceScreen } from './components/ReassuranceScreen';
@@ -16,12 +17,12 @@ export default function App() {
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() => parseAppConfig().themeConfig);
 
   // App navigation state
-  const [currentScreen, setCurrentScreen] = useState<AppScreen>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('initializing');
 
   // Photo state
   const [rawPhotoSrc, setRawPhotoSrc] = useState<string | null>(null);
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
-  const [hasSavedPhoto, setHasSavedPhoto] = useState<boolean>(false);
+  const [, setHasSavedPhoto] = useState<boolean>(false);
 
   // Initialize config and check for stored photo in IndexedDB
   useEffect(() => {
@@ -34,6 +35,9 @@ export default function App() {
       if (saved) {
         setActivePhoto(saved);
         setHasSavedPhoto(true);
+        setCurrentScreen('home');
+      } else {
+        setCurrentScreen('welcome');
       }
     });
   }, []);
@@ -44,11 +48,7 @@ export default function App() {
   };
 
   const handleResumeSaved = () => {
-    if (activePhoto) {
-      setCurrentScreen('game');
-    } else {
-      setCurrentScreen('choose-photo');
-    }
+    setCurrentScreen('game');
   };
 
   const handlePhotoSelected = (dataUrl: string) => {
@@ -77,14 +77,32 @@ export default function App() {
     setCurrentScreen('choose-photo');
   };
 
+  const handleClearGame = async () => {
+    await clearAllData();
+    setActivePhoto(null);
+    setHasSavedPhoto(false);
+    setCurrentScreen('welcome');
+  };
+
+  if (currentScreen === 'initializing') {
+    return <main className="min-h-screen bg-[#F4EFE6]" />;
+  }
+
   return (
     <main className={`min-h-screen text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
       {currentScreen === 'welcome' && (
         <WelcomeScreen
           themeConfig={themeConfig}
-          hasSavedPhoto={hasSavedPhoto}
           onStart={handleStartFromWelcome}
-          onResume={handleResumeSaved}
+        />
+      )}
+
+      {currentScreen === 'home' && (
+        <HomeScreen
+          themeConfig={themeConfig}
+          onPlay={handleResumeSaved}
+          onChangePhoto={handleChangeMemory}
+          onClearGame={handleClearGame}
         />
       )}
 
