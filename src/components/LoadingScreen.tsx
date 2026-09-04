@@ -8,8 +8,8 @@ interface LoadingScreenProps {
 }
 
 const STEPS = [
-  'Setting up your memory...',
-  'Building your game...',
+  'Prepping your surprise...',
+  'Building the puzzle...',
   'Almost ready...',
 ];
 
@@ -85,7 +85,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
         </div>
 
         <h2 className="text-2xl font-extrabold text-[#2D2A26] font-display mb-2">
-          Creating your fun experience...
+          Making the surprise awesome for you!
         </h2>
 
         {/* Step-by-step changing subtext */}

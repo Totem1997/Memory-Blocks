@@ -5,6 +5,7 @@ import { getStoredItem, setStoredItem } from './utils/storage';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { ChoosePhotoScreen } from './components/ChoosePhotoScreen';
 import { CropPhotoScreen } from './components/CropPhotoScreen';
+import { ReassuranceScreen } from './components/ReassuranceScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { GameBoard } from './components/GameBoard';
 
@@ -61,6 +62,10 @@ export default function App() {
     // Persist cropped photo and reset background theme
     await setStoredItem('photo', croppedDataUrl);
     await setStoredItem('bg-theme', 'minimalist-white');
+    setCurrentScreen('reassurance');
+  };
+
+  const handleContinueFromReassurance = () => {
     setCurrentScreen('creating');
   };
 
@@ -95,6 +100,12 @@ export default function App() {
           photoSrc={rawPhotoSrc}
           onCropConfirmed={handleCropConfirmed}
           onBack={() => setCurrentScreen('choose-photo')}
+        />
+      )}
+
+      {currentScreen === 'reassurance' && (
+        <ReassuranceScreen
+          onContinue={handleContinueFromReassurance}
         />
       )}
 
