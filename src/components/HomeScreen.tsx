@@ -33,7 +33,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   return (
     <div
       id="home-screen"
-      className="relative flex flex-col justify-center min-h-screen px-6 py-12 max-w-md mx-auto bg-[#F4EFE6] select-none"
+      className="relative flex flex-col justify-center min-h-screen px-6 py-12 max-w-md mx-auto bg-transparent select-none"
     >
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}

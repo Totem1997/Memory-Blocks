@@ -4,8 +4,6 @@
 
 export type AudienceType = 'adult' | 'child';
 
-export type ThemeType = 'birthday' | 'christmas' | 'general' | 'friendship';
-
 export type AppScreen = 'initializing' | 'home' | 'welcome' | 'choose-photo' | 'crop-photo' | 'reassurance' | 'creating' | 'game';
 
 export interface GridCell {
@@ -30,7 +28,6 @@ export interface RewardItem {
 }
 
 export interface ThemeConfig {
-  id: ThemeType;
   name: string;
   welcomeHeadline: string;
   welcomeSubtext: string;

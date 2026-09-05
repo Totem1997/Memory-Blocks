@@ -34,7 +34,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   return (
     <div
       id="loading-screen"
-      className="flex flex-col items-center justify-center min-h-screen px-6 max-w-md mx-auto select-none text-center"
+      className="flex flex-col items-center justify-center min-h-screen px-6 max-w-md mx-auto select-none text-center bg-transparent"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

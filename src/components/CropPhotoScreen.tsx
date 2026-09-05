@@ -114,7 +114,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
   return (
     <div
       id="crop-photo-screen"
-      className="flex flex-col justify-between min-h-screen px-6 py-6 max-w-md mx-auto select-none"
+      className="flex flex-col justify-between min-h-screen px-6 py-6 max-w-md mx-auto select-none bg-transparent"
     >
       {/* Top Bar */}
       <div className="flex items-center justify-between w-full">

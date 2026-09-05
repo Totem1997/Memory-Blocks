@@ -15,7 +15,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   return (
     <div
       id="welcome-screen"
-      className="relative flex flex-col justify-center min-h-screen px-6 py-12 max-w-md mx-auto bg-[#F4EFE6] select-none overflow-hidden text-center"
+      className="relative flex flex-col justify-center min-h-screen px-6 py-12 max-w-md mx-auto bg-transparent select-none overflow-hidden text-center"
     >
       {/* Main message card */}
       <motion.div

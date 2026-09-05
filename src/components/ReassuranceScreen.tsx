@@ -12,7 +12,7 @@ export const ReassuranceScreen: React.FC<ReassuranceScreenProps> = ({
   return (
     <div
       id="reassurance-screen"
-      className="relative flex flex-col justify-center min-h-screen px-6 py-8 max-w-md mx-auto select-none bg-[#F4EFE6]"
+      className="relative flex flex-col justify-center min-h-screen px-6 py-8 max-w-md mx-auto select-none bg-transparent"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

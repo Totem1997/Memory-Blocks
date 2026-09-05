@@ -41,7 +41,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
   return (
     <div
       id="choose-photo-screen"
-      className="relative flex flex-col min-h-screen px-6 py-8 max-w-md mx-auto select-none bg-[#F4EFE6]"
+      className="relative flex flex-col min-h-screen px-6 py-8 max-w-md mx-auto select-none bg-transparent"
     >
       {/* Hidden file inputs */}
       <input

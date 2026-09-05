@@ -1,75 +1,32 @@
-import { AudienceType, ThemeConfig, ThemeType } from '../types';
+import { AudienceType, ThemeConfig } from '../types';
 
-export const THEME_CONFIGS: Record<ThemeType, ThemeConfig> = {
-  birthday: {
-    id: 'birthday',
-    name: 'Birthday',
-    welcomeHeadline: 'A little gift made just for you.',
-    welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wanted to turn a favorite memory into a fun experience.',
-    accentColor: '#F43F5E',
-    bgDotColor: '#FDE047',
-    tagline: 'Happy Birthday!',
-  },
-  christmas: {
-    id: 'christmas',
-    name: 'Holiday',
-    welcomeHeadline: 'A little gift made just for you.',
-    welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wanted to turn a favorite memory into a fun experience.',
-    accentColor: '#059669',
-    bgDotColor: '#EF4444',
-    tagline: 'Happy Holidays!',
-  },
-  friendship: {
-    id: 'friendship',
-    name: 'Best Friends',
-    welcomeHeadline: 'A little gift made just for you.',
-    welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wanted to turn a favorite memory into a fun experience.',
-    accentColor: '#8B5CF6',
-    bgDotColor: '#EC4899',
-    tagline: 'Celebrating our friendship',
-  },
-  general: {
-    id: 'general',
-    name: 'Memory Blocks',
-    welcomeHeadline: 'A little gift made just for you.',
-    welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wanted to turn a favorite memory into a fun experience.',
-    accentColor: '#E11D48',
-    bgDotColor: '#F59E0B',
-    tagline: 'A favorite memory turned into a game',
-  },
+export const APP_CONFIG: ThemeConfig = {
+  name: 'Memory Blocks',
+  welcomeHeadline: 'A little gift made just for you.',
+  welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wanted to turn a favorite memory into a fun experience.',
+  accentColor: '#E11D48',
+  bgDotColor: '#F59E0B',
+  tagline: 'A favorite memory turned into a game',
 };
 
 export function parseAppConfig(): {
   audience: AudienceType;
-  theme: ThemeType;
   themeConfig: ThemeConfig;
 } {
   if (typeof window === 'undefined') {
     return {
       audience: 'adult',
-      theme: 'birthday',
-      themeConfig: THEME_CONFIGS.birthday,
+      themeConfig: APP_CONFIG,
     };
   }
 
   const params = new URLSearchParams(window.location.search);
   const rawAudience = params.get('audience')?.toLowerCase();
-  const rawTheme = params.get('theme')?.toLowerCase();
 
   const audience: AudienceType = rawAudience === 'child' || rawAudience === 'kid' ? 'child' : 'adult';
 
-  let theme: ThemeType = 'birthday';
-  if (rawTheme && rawTheme in THEME_CONFIGS) {
-    theme = rawTheme as ThemeType;
-  } else if (rawTheme === 'xmas' || rawTheme === 'holiday') {
-    theme = 'christmas';
-  } else if (rawTheme === 'friends' || rawTheme === 'friend') {
-    theme = 'friendship';
-  }
-
   return {
     audience,
-    theme,
-    themeConfig: THEME_CONFIGS[theme],
+    themeConfig: APP_CONFIG,
   };
 }

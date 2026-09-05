@@ -623,7 +623,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   return (
     <div
       id="game-board-container"
-      className="relative flex flex-col justify-between items-center w-full min-h-[100dvh] px-3 sm:px-4 pt-1.5 pb-6 sm:pb-8 max-w-md mx-auto select-none overflow-hidden touch-none"
+      className="relative flex flex-col justify-between items-center w-full min-h-[100dvh] px-3 sm:px-4 pt-1.5 pb-6 sm:pb-8 max-w-md mx-auto select-none touch-none"
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}

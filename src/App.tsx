@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AppScreen, AudienceType, ThemeConfig, ThemeType } from './types';
+import { AppScreen, AudienceType, ThemeConfig } from './types';
 import { parseAppConfig } from './utils/config';
 import { getStoredItem, setStoredItem, clearAllData } from './utils/storage';
 import { WelcomeScreen } from './components/WelcomeScreen';
@@ -13,7 +13,6 @@ import { GameBoard } from './components/GameBoard';
 export default function App() {
   // Config determined by QR code / URL params
   const [audience, setAudience] = useState<AudienceType>('adult');
-  const [, setTheme] = useState<ThemeType>('birthday');
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() => parseAppConfig().themeConfig);
 
   // App navigation state
@@ -28,7 +27,6 @@ export default function App() {
   useEffect(() => {
     const config = parseAppConfig();
     setAudience(config.audience);
-    setTheme(config.theme);
     setThemeConfig(config.themeConfig);
 
     getStoredItem<string | null>('photo', null).then((saved) => {
@@ -89,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <main className={`min-h-screen text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
+    <main className={`min-h-[100dvh] text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-transparent'}`}>
       {currentScreen === 'welcome' && (
         <WelcomeScreen
           themeConfig={themeConfig}
