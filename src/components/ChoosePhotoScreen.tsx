@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Camera, Image as ImageIcon, ArrowLeft, Heart, Sparkles, Star } from 'lucide-react';
+import { Camera, Image as ImageIcon, ArrowLeft, ArrowRight, Upload } from 'lucide-react';
 
 interface ChoosePhotoScreenProps {
   onPhotoSelected: (dataUrl: string) => void;
@@ -90,14 +90,11 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-                <Heart className="w-8 h-8 text-[#E68A5C] fill-[#E68A5C]/20" />
-              </div>
               <h1 className="text-3xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
                 What is your favorite memory together?
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10">
-                Do you have a photo of it ready?
+              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+                Take a moment to think of a time with them that always makes you smile. If you have a photo of that memory saved, we will turn it into something special.
               </p>
 
               {errorMsg && (
@@ -106,7 +103,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
                 </div>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
@@ -116,9 +113,10 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
                 </button>
                 <button
                   onClick={() => setStep(2)}
-                  className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#2D2A26] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5DACE] shadow-sm cursor-pointer"
+                  className="w-full py-3 px-4 text-[#8C7A6B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span>I DON'T HAVE ONE HANDY</span>
+                  <span className="underline underline-offset-4 decoration-[#E5DACE]">I don't have one handy</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </motion.div>
@@ -133,14 +131,11 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-                <Sparkles className="w-8 h-8 text-[#0284C7] fill-[#0284C7]/20" />
-              </div>
               <h1 className="text-3xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
-                That's okay! Let's make a new memory right now.
+                That&apos;s perfectly okay.
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10">
-                Take a quick selfie together!
+              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+                The best time to capture a beautiful moment is right now. If they are with you, let&apos;s take a new photo together and let the magic begin.
               </p>
 
               {errorMsg && (
@@ -149,7 +144,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
                 </div>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <button
                   onClick={() => cameraInputRef.current?.click()}
                   className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
@@ -159,9 +154,10 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#2D2A26] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5DACE] shadow-sm cursor-pointer"
+                  className="w-full py-3 px-4 text-[#8C7A6B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span>THEY AREN'T HERE RIGHT NOW</span>
+                  <span className="underline underline-offset-4 decoration-[#E5DACE]">They aren't here right now</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </motion.div>
@@ -176,14 +172,11 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-                <Star className="w-8 h-8 text-[#F59E0B] fill-[#F59E0B]/20" />
-              </div>
               <h1 className="text-2xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4 leading-tight">
-                Actually, they wanted YOU to be the star of this surprise.
+                You&apos;re the star of this surprise!
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10">
-                This is your canvas. Take a selfie or pick any photo you love.
+              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+                Since this experience was made especially for you, a photo of yourself is absolutely perfect. Let&apos;s capture one right now and let the magic unfold.
               </p>
 
               {errorMsg && (
