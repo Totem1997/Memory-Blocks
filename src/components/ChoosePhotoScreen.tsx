@@ -176,7 +176,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
                 You&apos;re the star of this surprise!
               </h1>
               <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
-                Since this experience was made especially for you, a photo of yourself is absolutely perfect. Let&apos;s capture one right now and let the magic unfold.
+                Since this experience was made especially for you, a photo of yourself is absolutely perfect. Let&apos;s capture one right now or pick your favorite photo (e.g. with your pets, in your favorite place or moment, etc.) and let the magic unfold.
               </p>
 
               {errorMsg && (

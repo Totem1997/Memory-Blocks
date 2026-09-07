@@ -1,22 +1,28 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowLeft, ZoomIn, ZoomOut, Check, Move } from 'lucide-react';
+import { ArrowLeft, Check, ImageIcon } from 'lucide-react';
 
 interface CropPhotoScreenProps {
   photoSrc: string;
   onCropConfirmed: (croppedDataUrl: string) => void;
   onBack: () => void;
+  onRequestNewPhoto?: () => void;
 }
 
 export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
   photoSrc,
   onCropConfirmed,
   onBack,
+  onRequestNewPhoto,
 }) => {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [naturalSize, setNaturalSize] = useState({ width: 800, height: 800 });
+
+  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const initialPinchDist = useRef<number | null>(null);
+  const initialScale = useRef<number>(1);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -34,31 +40,61 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
     };
   }, [photoSrc]);
 
-  // Pointer drag handling
+  // Pointer drag and pinch handling
   const handlePointerDown = (e: React.PointerEvent) => {
-    setIsDragging(true);
-    setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointers.current.size === 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y,
+      });
+    } else if (activePointers.current.size === 2) {
+      const pts = Array.from(activePointers.current.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      initialPinchDist.current = dist;
+      initialScale.current = scale;
+    }
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return;
-    setPosition({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
+    if (!activePointers.current.has(e.pointerId)) return;
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointers.current.size === 1 && isDragging) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    } else if (activePointers.current.size === 2) {
+      const pts = Array.from(activePointers.current.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      if (initialPinchDist.current) {
+        const newScale = Math.max(1, Math.min(initialScale.current * (dist / initialPinchDist.current), 4));
+        setScale(newScale);
+      }
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    setIsDragging(false);
+    activePointers.current.delete(e.pointerId);
+    if (activePointers.current.size < 2) {
+      initialPinchDist.current = null;
+    }
+    if (activePointers.current.size === 0) {
+      setIsDragging(false);
+    }
     try {
       (e.target as HTMLElement).releasePointerCapture(e.pointerId);
     } catch {
       // ignore
     }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    const newScale = Math.max(1, Math.min(scale - e.deltaY * 0.005, 4));
+    setScale(newScale);
   };
 
   // Perform crop on canvas
@@ -117,7 +153,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
       className="flex flex-col justify-between min-h-screen px-6 py-6 max-w-md mx-auto select-none bg-transparent"
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between w-full">
+      <div className="flex items-center w-full">
         <button
           id="btn-crop-back"
           onClick={onBack}
@@ -126,20 +162,16 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <span className="text-xs font-semibold tracking-wider text-[#8C7A6B] uppercase font-display">
-          Position Your Memory
-        </span>
-        <div className="w-8" />
       </div>
 
       {/* Center Crop Workspace */}
       <div className="my-auto flex flex-col items-center">
-        <div className="text-center mb-4">
+        <div className="text-center mb-4 max-w-xs">
           <h2 className="text-2xl font-bold text-[#2D2A26] font-display">
-            Adjust Game Board Area
+            Adjust Your Photo
           </h2>
           <p className="text-xs text-[#6D655E] mt-1">
-            Drag to reposition. This square is what will appear under your blocks.
+            Reposition by dragging or pinching to zoom. Make sure you keep the best parts of the photo inside the square
           </p>
         </div>
 
@@ -151,6 +183,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
+          onWheel={handleWheel}
         >
           {/* Underlying Image */}
           <div
@@ -178,7 +211,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
           </div>
 
           {/* Exact 8x8 Grid Preview Overlay */}
-          <div className="absolute inset-0 z-10 pointer-events-none opacity-90">
+          <div className="absolute inset-0 z-10 pointer-events-none opacity-90 hidden">
             {/* Vertical lines */}
             <div className="absolute inset-0 flex justify-evenly">
               {[...Array(7)].map((_, i) => (
@@ -194,41 +227,31 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
             {/* Outer boundary */}
             <div className="absolute inset-0 border border-white/20" />
           </div>
-
-          {/* Hint badge */}
-          <div className="absolute top-2 left-2 px-2 py-1 rounded-md bg-black/40 backdrop-blur-xs text-[10px] text-white/90 font-medium flex items-center gap-1 pointer-events-none">
-            <Move className="w-3 h-3" />
-            <span>Drag to center</span>
-          </div>
         </div>
 
-        {/* Zoom Slider Control */}
-        <div className="w-72 sm:w-80 mt-5 px-3 py-2.5 rounded-xl bg-[#F3ECE4] flex items-center gap-3">
-          <ZoomOut className="w-4 h-4 text-[#8C7A6B]" />
-          <input
-            id="slider-zoom"
-            type="range"
-            min="1"
-            max="3"
-            step="0.05"
-            value={scale}
-            onChange={(e) => setScale(parseFloat(e.target.value))}
-            className="w-full accent-[#2D2A26] cursor-pointer"
-          />
-          <ZoomIn className="w-4 h-4 text-[#8C7A6B]" />
+        {/* Action Buttons moved up below the square */}
+        <div className="w-72 sm:w-80 mt-8 space-y-3">
+          <button
+            id="btn-use-this-memory"
+            onClick={handleConfirmCrop}
+            className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+          >
+            <Check className="w-5 h-5 text-[#86EFAC]" />
+            <span>USE THIS MEMORY</span>
+          </button>
+          <button
+            onClick={onRequestNewPhoto || onBack}
+            className="w-full py-3.5 px-4 bg-white hover:bg-[#F3ECE4] active:scale-[0.98] text-[#2D2A26] font-bold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5DACE] shadow-sm cursor-pointer"
+          >
+            <ImageIcon className="w-4 h-4 text-[#8C7A6B]" />
+            <span>Choose a different photo</span>
+          </button>
         </div>
       </div>
-
-      {/* Bottom Confirmation Button (Section 8 requirement) */}
-      <div className="w-full pt-4">
-        <button
-          id="btn-use-this-memory"
-          onClick={handleConfirmCrop}
-          className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
-        >
-          <Check className="w-5 h-5 text-[#86EFAC]" />
-          <span>USE THIS MEMORY</span>
-        </button>
+      
+      {/* Empty bottom spacer to keep centering balanced */}
+      <div className="w-full pt-4 opacity-0 pointer-events-none">
+        <div className="h-14"></div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AppScreen, AudienceType, ThemeConfig } from './types';
 import { parseAppConfig } from './utils/config';
 import { getStoredItem, setStoredItem, clearAllData } from './utils/storage';
@@ -21,7 +21,8 @@ export default function App() {
   // Photo state
   const [rawPhotoSrc, setRawPhotoSrc] = useState<string | null>(null);
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
-  const [, setHasSavedPhoto] = useState<boolean>(false);
+  const [hasSavedPhoto, setHasSavedPhoto] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize config and check for stored photo in IndexedDB
   useEffect(() => {
@@ -56,11 +57,17 @@ export default function App() {
 
   const handleCropConfirmed = async (croppedDataUrl: string) => {
     setActivePhoto(croppedDataUrl);
-    setHasSavedPhoto(true);
+    
     // Persist cropped photo and reset background theme
     await setStoredItem('photo', croppedDataUrl);
     await setStoredItem('bg-theme', 'minimalist-white');
-    setCurrentScreen('reassurance');
+    
+    if (hasSavedPhoto) {
+      setCurrentScreen('creating');
+    } else {
+      setHasSavedPhoto(true);
+      setCurrentScreen('reassurance');
+    }
   };
 
   const handleContinueFromReassurance = () => {
@@ -71,8 +78,33 @@ export default function App() {
     setCurrentScreen('game');
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        setRawPhotoSrc(result);
+        setCurrentScreen('crop-photo');
+      }
+    };
+    reader.readAsDataURL(file);
+    
+    // Reset the input value so the same file can be selected again if needed
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
+
   const handleChangeMemory = () => {
-    setCurrentScreen('choose-photo');
+    fileInputRef.current?.click();
   };
 
   const handleClearGame = async () => {
@@ -87,8 +119,16 @@ export default function App() {
   }
 
   return (
-    <main className={`min-h-[100dvh] text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
-      {currentScreen === 'welcome' && (
+    <>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+      <main className={`min-h-[100dvh] text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
+        {currentScreen === 'welcome' && (
         <WelcomeScreen
           themeConfig={themeConfig}
           onStart={handleStartFromWelcome}
@@ -116,6 +156,7 @@ export default function App() {
           photoSrc={rawPhotoSrc}
           onCropConfirmed={handleCropConfirmed}
           onBack={() => setCurrentScreen('choose-photo')}
+          onRequestNewPhoto={handleChangeMemory}
         />
       )}
 
@@ -140,6 +181,7 @@ export default function App() {
           onChangeMemory={handleChangeMemory}
         />
       )}
-    </main>
+      </main>
+    </>
   );
 }
