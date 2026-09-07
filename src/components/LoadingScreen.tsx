@@ -4,19 +4,29 @@ import { motion, AnimatePresence } from 'motion/react';
 interface LoadingScreenProps {
   photoSrc: string;
   onFinished: () => void;
+  isReturningPlayer?: boolean;
 }
 
-const STEPS = [
+const NEW_PLAYER_STEPS = [
   'Making the surprise awesome for you!',
   'Transforming your memory...',
   'Adding a fun little twist...',
   'Almost there...',
 ];
 
+const RETURNING_PLAYER_STEPS = [
+  'Framing your new memory...',
+  'Preparing the board...',
+  'Putting the pieces in place...',
+  'Almost ready...',
+];
+
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   onFinished,
+  isReturningPlayer = false,
 }) => {
   const [stepIndex, setStepIndex] = useState(0);
+  const steps = isReturningPlayer ? RETURNING_PLAYER_STEPS : NEW_PLAYER_STEPS;
 
   useEffect(() => {
     // Spread across 8 seconds to build anticipation
@@ -55,7 +65,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-2xl font-extrabold text-[#2D2A26] font-display text-center"
             >
-              {STEPS[stepIndex]}
+              {steps[stepIndex]}
             </motion.h2>
           </AnimatePresence>
         </div>

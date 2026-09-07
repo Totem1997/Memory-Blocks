@@ -73,9 +73,6 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <span className="text-xs font-semibold tracking-wider text-[#8C7A6B] uppercase font-display">
-          Step {step} of 3
-        </span>
         <div className="w-8" />
       </div>
 

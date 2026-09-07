@@ -17,6 +17,9 @@ export default function App() {
 
   // App navigation state
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('initializing');
+  const [hasPlayedBefore, setHasPlayedBefore] = useState<boolean>(() => {
+    return localStorage.getItem('hasPlayedBefore') === 'true';
+  });
 
   // Photo state
   const [rawPhotoSrc, setRawPhotoSrc] = useState<string | null>(null);
@@ -75,6 +78,8 @@ export default function App() {
   };
 
   const handleLoadingFinished = () => {
+    setHasPlayedBefore(true);
+    localStorage.setItem('hasPlayedBefore', 'true');
     setCurrentScreen('game');
   };
 
@@ -109,6 +114,8 @@ export default function App() {
 
   const handleClearGame = async () => {
     await clearAllData();
+    localStorage.removeItem('hasPlayedBefore');
+    setHasPlayedBefore(false);
     setActivePhoto(null);
     setHasSavedPhoto(false);
     setCurrentScreen('welcome');
@@ -170,6 +177,7 @@ export default function App() {
         <LoadingScreen
           photoSrc={activePhoto}
           onFinished={handleLoadingFinished}
+          isReturningPlayer={hasPlayedBefore}
         />
       )}
 
