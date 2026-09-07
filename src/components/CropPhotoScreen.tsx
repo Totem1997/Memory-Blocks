@@ -171,7 +171,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
             Adjust Your Photo
           </h2>
           <p className="text-xs text-[#6D655E] mt-1">
-            Reposition by dragging or pinching to zoom. Make sure you keep the best parts of the photo inside the square
+            Reposition and center by dragging or pinching to zoom.
           </p>
         </div>
 
