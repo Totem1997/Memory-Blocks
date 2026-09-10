@@ -128,7 +128,7 @@ export default function App() {
   };
 
   if (currentScreen === 'initializing') {
-    return <main className="min-h-screen bg-[#FAF7F2]" />;
+    return <main className="min-h-screen bg-[#F5F5F7]" />;
   }
 
   return (
@@ -140,7 +140,7 @@ export default function App() {
         className="hidden"
         onChange={handleFileChange}
       />
-      <main className={`min-h-[100dvh] text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
+      <main className={`min-h-[100dvh] text-[#1D1D1F] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#F5F5F7]'}`}>
         {currentScreen === 'gift' && (
           <GiftScreen onOpen={() => setCurrentScreen('welcome')} />
         )}

@@ -63,7 +63,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="text-2xl font-extrabold text-[#2D2A26] font-display text-center"
+              className="text-2xl font-extrabold text-[#1D1D1F] font-display text-center"
             >
               {steps[stepIndex]}
             </motion.h2>
@@ -76,7 +76,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
             initial={{ width: '0%' }}
             animate={{ width: '100%' }}
             transition={{ duration: 8, ease: 'linear' }}
-            className="h-full bg-[#2D2A26] rounded-full"
+            className="h-full bg-[#1D1D1F] rounded-full"
           />
         </div>
       </motion.div>

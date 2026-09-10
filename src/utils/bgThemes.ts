@@ -13,7 +13,7 @@ export const BACKGROUND_THEMES: BgTheme[] = [
     id: 'minimalist-white',
     name: 'Minimalist White',
     type: 'color',
-    color: '#F4EFE6', // Warm, soft paper/parchment off-white
+    color: '#F5F5F7', // Crisp Apple-style off-white
   },
   {
     id: 'warm-sand',

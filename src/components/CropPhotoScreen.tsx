@@ -113,7 +113,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
     const containerRect = container.getBoundingClientRect();
 
     // Fill background with soft neutral in case of edge margin
-    ctx.fillStyle = '#FAF7F2';
+    ctx.fillStyle = '#F5F5F7';
     ctx.fillRect(0, 0, exportSize, exportSize);
 
     // Calculate scale factor between display container and export canvas
@@ -157,7 +157,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
         <button
           id="btn-crop-back"
           onClick={onBack}
-          className="p-2 -ml-2 rounded-full hover:bg-[#F3ECE4] text-[#6D655E] transition-colors cursor-pointer"
+          className="p-2 -ml-2 rounded-full hover:bg-[#E5E5EA] text-[#515154] transition-colors cursor-pointer"
           aria-label="Back"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -167,10 +167,10 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
       {/* Center Crop Workspace */}
       <div className="my-auto flex flex-col items-center">
         <div className="text-center mb-4 max-w-xs">
-          <h2 className="text-2xl font-bold text-[#2D2A26] font-display">
+          <h2 className="text-2xl font-bold text-[#1D1D1F] font-display">
             Adjust Your Photo
           </h2>
-          <p className="text-xs text-[#6D655E] mt-1">
+          <p className="text-xs text-[#515154] mt-1">
             Reposition and center by dragging or pinching to zoom.
           </p>
         </div>
@@ -234,16 +234,16 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
           <button
             id="btn-use-this-memory"
             onClick={handleConfirmCrop}
-            className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+            className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
           >
             <Check className="w-5 h-5 text-[#86EFAC]" />
             <span>USE THIS MEMORY</span>
           </button>
           <button
             onClick={onRequestNewPhoto || onBack}
-            className="w-full py-3.5 px-4 bg-white hover:bg-[#F3ECE4] active:scale-[0.98] text-[#2D2A26] font-bold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5DACE] shadow-sm cursor-pointer"
+            className="w-full py-3.5 px-4 bg-white hover:bg-[#E5E5EA] active:scale-[0.98] text-[#1D1D1F] font-bold text-sm rounded-2xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5E5EA] shadow-sm cursor-pointer"
           >
-            <ImageIcon className="w-4 h-4 text-[#8C7A6B]" />
+            <ImageIcon className="w-4 h-4 text-[#86868B]" />
             <span>Choose a different photo</span>
           </button>
         </div>

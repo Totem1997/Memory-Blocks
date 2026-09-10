@@ -9,7 +9,7 @@ interface GiftScreenProps {
 export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen px-6 max-w-md mx-auto select-none text-center bg-[#FAF7F2] cursor-pointer"
+      className="flex flex-col items-center justify-center min-h-screen px-6 max-w-md mx-auto select-none text-center bg-[#F5F5F7] cursor-pointer"
       onClick={onOpen}
     >
       <motion.div
@@ -18,7 +18,7 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="flex flex-col items-center w-full"
       >
-        <h1 className="text-xl font-bold tracking-widest text-[#2D2A26] uppercase font-display mb-16 text-center">
+        <h1 className="text-xl font-bold tracking-widest text-[#1D1D1F] uppercase font-display mb-16 text-center">
           A GIFT IS WAITING FOR YOU
         </h1>
 
@@ -42,7 +42,7 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
         <motion.p
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-sm font-semibold tracking-wider text-[#8C7A6B] uppercase font-display"
+          className="text-sm font-semibold tracking-wider text-[#86868B] uppercase font-display"
         >
           Click the gift to open!
         </motion.p>

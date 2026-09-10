@@ -699,23 +699,23 @@ export const GameBoard: React.FC<GameBoardProps> = ({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="w-full max-w-sm p-5 bg-[#FAF7F2] border border-[#E8DFC8] rounded-3xl shadow-2xl flex flex-col items-center text-center z-50"
+              className="w-full max-w-sm p-5 bg-[#F5F5F7] border border-[#E5E5EA] rounded-3xl shadow-2xl flex flex-col items-center text-center z-50"
             >
-              <div className="w-14 h-14 mb-3 rounded-2xl bg-[#F4E9D8] text-[#2D2A26] flex items-center justify-center shadow-inner">
+              <div className="w-14 h-14 mb-3 rounded-2xl bg-[#E5E5EA] text-[#1D1D1F] flex items-center justify-center shadow-inner">
                 {audience === 'child' ? <Sparkles className="w-7 h-7 text-[#F59E0B]" /> : <Gift className="w-7 h-7 text-[#E11D48]" />}
               </div>
               <div className="mb-4">
-                <div className="text-xl font-extrabold text-[#2D2A26] font-display mb-1">
+                <div className="text-xl font-extrabold text-[#1D1D1F] font-display mb-1">
                   Welcome back!
                 </div>
-                <div className="text-sm font-medium text-[#8C7A6B]">
+                <div className="text-sm font-medium text-[#86868B]">
                   You have a new message waiting for you.
                 </div>
               </div>
               <button
                 id="btn-open-welcome-message"
                 onClick={handleOpenWelcomeMessage}
-                className="w-full py-3.5 px-6 bg-[#2D2A26] hover:bg-[#1A1816] text-white text-sm font-bold rounded-xl shadow-md active:scale-[0.98] transition-all font-display uppercase tracking-wider cursor-pointer"
+                className="w-full py-3.5 px-6 bg-[#1D1D1F] hover:bg-[#000000] text-white text-sm font-bold rounded-xl shadow-md active:scale-[0.98] transition-all font-display uppercase tracking-wider cursor-pointer"
               >
                 OPEN MESSAGE
               </button>

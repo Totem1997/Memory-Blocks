@@ -33,19 +33,19 @@ export const RewardModal: React.FC<RewardModalProps> = ({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className="relative w-full max-w-sm p-6 bg-[#FAF7F2] rounded-3xl shadow-2xl border border-[#E8DFC8] text-center overflow-hidden"
+          className="relative w-full max-w-sm p-6 bg-[#F5F5F7] rounded-3xl shadow-2xl border border-[#E5E5EA] text-center overflow-hidden"
         >
           {/* Close icon in top right */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#F0E6D8] text-[#8C7A6B] transition-colors cursor-pointer"
+            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#F0E6D8] text-[#86868B] transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Decorative gift/sparkle icon */}
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#F4E9D8] flex items-center justify-center text-[#2D2A26] shadow-sm">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#E5E5EA] flex items-center justify-center text-[#1D1D1F] shadow-sm">
             {isChild ? (
               <Sparkles className="w-8 h-8 text-[#F59E0B]" />
             ) : (
@@ -53,7 +53,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
             )}
           </div>
 
-          <h3 className="text-2xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
+          <h3 className="text-2xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
             {heading}
           </h3>
 
@@ -66,7 +66,7 @@ export const RewardModal: React.FC<RewardModalProps> = ({
           <button
             id="btn-reward-keep-playing"
             onClick={onClose}
-            className="w-full py-3.5 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all font-display uppercase tracking-wide cursor-pointer"
+            className="w-full py-3.5 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all font-display uppercase tracking-wide cursor-pointer"
           >
             CONTINUE PLAYING
           </button>

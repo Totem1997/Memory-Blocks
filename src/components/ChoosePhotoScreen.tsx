@@ -68,7 +68,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
             if (step > 1) setStep((s) => (s - 1) as 1 | 2 | 3);
             else onBack();
           }}
-          className="p-2 -ml-2 rounded-full hover:bg-white/50 text-[#6D655E] transition-colors cursor-pointer"
+          className="p-2 -ml-2 rounded-full hover:bg-white/50 text-[#515154] transition-colors cursor-pointer"
           aria-label="Go back"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -87,10 +87,10 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <h1 className="text-3xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
+              <h1 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
                 What is your favorite memory together?
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
                 Take a moment to think of a time with them that always makes you smile. If you have a photo of that memory saved, we will turn it into something special.
               </p>
 
@@ -103,16 +103,16 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               <div className="space-y-4">
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
                 >
                   <ImageIcon className="w-5 h-5 text-[#FDE047]" />
                   <span>I HAVE A PHOTO</span>
                 </button>
                 <button
                   onClick={() => setStep(2)}
-                  className="w-full py-3 px-4 text-[#8C7A6B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 text-[#86868B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span className="underline underline-offset-4 decoration-[#E5DACE]">I don't have one handy</span>
+                  <span className="underline underline-offset-4 decoration-[#E5E5EA]">I don't have one handy</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -128,10 +128,10 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <h1 className="text-3xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
+              <h1 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
                 That&apos;s perfectly okay.
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
                 The best time to capture a beautiful moment is right now. If they are with you, let&apos;s take a new photo together and let the magic begin.
               </p>
 
@@ -144,16 +144,16 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               <div className="space-y-4">
                 <button
                   onClick={() => cameraInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
                 >
                   <Camera className="w-5 h-5 text-[#7DD3FC]" />
                   <span>TAKE A SELFIE</span>
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="w-full py-3 px-4 text-[#8C7A6B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 text-[#86868B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
                 >
-                  <span className="underline underline-offset-4 decoration-[#E5DACE]">They aren't here right now</span>
+                  <span className="underline underline-offset-4 decoration-[#E5E5EA]">They aren't here right now</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -169,10 +169,10 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               transition={{ duration: 0.4 }}
               className="text-center"
             >
-              <h1 className="text-2xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4 leading-tight">
+              <h1 className="text-2xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4 leading-tight">
                 You&apos;re the star of this surprise!
               </h1>
-              <p className="text-[#6D655E] text-base max-w-xs mx-auto mb-10 leading-relaxed">
+              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
                 Since this experience was made especially for you, a photo of yourself is absolutely perfect. Let&apos;s capture one right now or pick your favorite photo (e.g. with your pets, in your favorite place or moment, etc.) and let the magic unfold.
               </p>
 
@@ -185,16 +185,16 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               <div className="space-y-3">
                 <button
                   onClick={() => cameraInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
                 >
                   <Camera className="w-5 h-5 text-[#FDE047]" />
                   <span>TAKE A SELFIE</span>
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#2D2A26] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5DACE] shadow-sm cursor-pointer"
+                  className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#1D1D1F] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5E5EA] shadow-sm cursor-pointer"
                 >
-                  <ImageIcon className="w-5 h-5 text-[#8C7A6B]" />
+                  <ImageIcon className="w-5 h-5 text-[#86868B]" />
                   <span>CHOOSE A PHOTO</span>
                 </button>
               </div>

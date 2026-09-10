@@ -24,17 +24,17 @@ export const ReassuranceScreen: React.FC<ReassuranceScreenProps> = ({
           <CheckCircle2 className="w-8 h-8 text-[#059669]" />
         </div>
         
-        <h1 className="text-3xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-4">
+        <h1 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
           Great choice!
         </h1>
         
-        <p className="text-[#6D655E] text-lg max-w-xs mx-auto mb-10 leading-relaxed">
+        <p className="text-[#515154] text-lg max-w-xs mx-auto mb-10 leading-relaxed">
           Just so you know, you can always change this picture later if you want.
         </p>
 
         <button
           onClick={onContinue}
-          className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+          className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
         >
           <span>CONTINUE</span>
           <ArrowRight className="w-5 h-5" />

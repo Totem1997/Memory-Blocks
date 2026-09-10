@@ -45,17 +45,17 @@ export const PauseModal: React.FC<PauseModalProps> = ({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className="relative w-full max-w-xs p-6 bg-[#FAF7F2] rounded-3xl shadow-2xl border border-[#E8DFC8] text-center"
+          className="relative w-full max-w-xs p-6 bg-[#F5F5F7] rounded-3xl shadow-2xl border border-[#E5E5EA] text-center"
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#F0E6D8] text-[#8C7A6B] transition-colors cursor-pointer"
+            className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#F0E6D8] text-[#86868B] transition-colors cursor-pointer"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <h3 className="text-2xl font-extrabold text-[#2D2A26] font-display tracking-tight mb-6">
+          <h3 className="text-2xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-6">
             Game Paused
           </h3>
 
@@ -64,7 +64,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               id="btn-pause-resume"
               onClick={onResume}
-              className="w-full py-3.5 px-4 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
+              className="w-full py-3.5 px-4 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
             >
               <Play className="w-4 h-4 fill-white" />
               <span>Resume</span>
@@ -74,9 +74,9 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               id="btn-pause-restart"
               onClick={onRestart}
-              className="w-full py-3.5 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#2D2A26] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5DACE] cursor-pointer"
+              className="w-full py-3.5 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#1D1D1F] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5E5EA] cursor-pointer"
             >
-              <RotateCcw className="w-4 h-4 text-[#8C7A6B]" />
+              <RotateCcw className="w-4 h-4 text-[#86868B]" />
               <span>Restart Run</span>
             </button>
 
@@ -84,15 +84,15 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               id="btn-pause-change-memory"
               onClick={onChangeMemory}
-              className="w-full py-3 px-4 bg-[#F3ECE4] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
+              className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
             >
-              <ImageIcon className="w-3.5 h-3.5 text-[#8C7A6B]" />
+              <ImageIcon className="w-3.5 h-3.5 text-[#86868B]" />
               <span>Change Photo Memory</span>
             </button>
 
             {/* Theme Selector */}
-            <div className="pt-4 pb-2 border-t border-[#E8DFC8]">
-              <p className="text-xs font-semibold text-[#8C7A6B] mb-3 uppercase tracking-wider">
+            <div className="pt-4 pb-2 border-t border-[#E5E5EA]">
+              <p className="text-xs font-semibold text-[#86868B] mb-3 uppercase tracking-wider">
                 Background Theme
               </p>
               <div className="flex items-center justify-center gap-3">
@@ -101,7 +101,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
                     key={theme.id}
                     onClick={() => onThemeChange(theme.id)}
                     className={`w-8 h-8 rounded-full border border-black/10 transition-transform shadow-sm cursor-pointer ${
-                      currentBgTheme === theme.id ? 'scale-125 ring-2 ring-offset-2 ring-[#2D2A26]' : 'hover:scale-110'
+                      currentBgTheme === theme.id ? 'scale-125 ring-2 ring-offset-2 ring-[#1D1D1F]' : 'hover:scale-110'
                     }`}
                     style={{ background: theme.swatchBackground || theme.color }}
                     title={theme.name}
@@ -112,11 +112,11 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             </div>
 
             {/* Sound Toggle */}
-            <div className="pt-4 border-t border-[#E8DFC8]">
+            <div className="pt-4 border-t border-[#E5E5EA]">
               <button
                 id="btn-pause-toggle-sound"
                 onClick={toggleSound}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#8C7A6B] hover:bg-[#F3ECE4] transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#86868B] hover:bg-[#E5E5EA] transition-colors cursor-pointer"
               >
                 {sound ? (
                   <>

@@ -41,22 +41,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center text-center my-auto w-full"
       >
-        <div className="w-20 h-20 bg-white rounded-3xl shadow-sm border border-[#E8DFC8] flex items-center justify-center mb-8">
+        <div className="w-20 h-20 bg-white rounded-3xl shadow-sm border border-[#E5E5EA] flex items-center justify-center mb-8">
           <Play className="w-10 h-10 text-[#E68A5C] fill-[#E68A5C]/20 ml-1" />
         </div>
         
-        <h1 className="text-4xl font-extrabold text-[#2D2A26] font-display tracking-tight leading-tight mb-3">
+        <h1 className="text-4xl font-extrabold text-[#1D1D1F] font-display tracking-tight leading-tight mb-3">
           Your Memory <br/>Puzzle
         </h1>
         
-        <p className="text-[#6D655E] text-base mb-12">
+        <p className="text-[#515154] text-base mb-12">
           Welcome back! Ready to continue piecing together your memory?
         </p>
 
         <div className="w-full max-w-[280px] space-y-4">
           <button
             onClick={onPlay}
-            className="w-full py-4 px-6 bg-[#2D2A26] hover:bg-[#1A1816] active:scale-[0.98] text-white font-bold text-lg rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+            className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-lg rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
           >
             <Play className="w-5 h-5 fill-current" />
             <span>PLAY</span>
@@ -64,9 +64,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#2D2A26] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5DACE] shadow-sm cursor-pointer"
+            className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#1D1D1F] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5E5EA] shadow-sm cursor-pointer"
           >
-            <Settings className="w-5 h-5 text-[#8C7A6B]" />
+            <Settings className="w-5 h-5 text-[#86868B]" />
             <span>SETTINGS</span>
           </button>
         </div>
@@ -92,18 +92,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   {settingsView === 'other' && (
                     <button 
                       onClick={() => setSettingsView('main')}
-                      className="p-1 -ml-1 text-[#8C7A6B] hover:bg-[#F4EFE6] rounded-full transition-colors cursor-pointer"
+                      className="p-1 -ml-1 text-[#86868B] hover:bg-[#F4EFE6] rounded-full transition-colors cursor-pointer"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                   )}
-                  <h2 className="text-xl font-bold text-[#2D2A26] font-display">
+                  <h2 className="text-xl font-bold text-[#1D1D1F] font-display">
                     {settingsView === 'main' ? 'Settings' : 'Other Options'}
                   </h2>
                 </div>
                 <button 
                   onClick={closeSettings}
-                  className="p-2 -mr-2 text-[#8C7A6B] hover:bg-[#F4EFE6] rounded-full transition-colors cursor-pointer"
+                  className="p-2 -mr-2 text-[#86868B] hover:bg-[#F4EFE6] rounded-full transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -128,8 +128,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         className="w-full flex items-center justify-between p-4 bg-[#F4EFE6]/50 hover:bg-[#F4EFE6] rounded-xl transition-colors cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
-                          <ImageIcon className="w-5 h-5 text-[#8C7A6B]" />
-                          <span className="font-semibold text-[#2D2A26]">Change Board Photo</span>
+                          <ImageIcon className="w-5 h-5 text-[#86868B]" />
+                          <span className="font-semibold text-[#1D1D1F]">Change Board Photo</span>
                         </div>
                       </button>
 
@@ -138,10 +138,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         className="w-full flex items-center justify-between p-4 bg-white hover:bg-[#F4EFE6]/30 border border-[#F4EFE6] rounded-xl transition-colors cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
-                          <Settings className="w-5 h-5 text-[#8C7A6B]" />
-                          <span className="font-semibold text-[#6D655E]">Other Options</span>
+                          <Settings className="w-5 h-5 text-[#86868B]" />
+                          <span className="font-semibold text-[#515154]">Other Options</span>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-[#8C7A6B]" />
+                        <ChevronRight className="w-5 h-5 text-[#86868B]" />
                       </button>
                     </motion.div>
                   )}
@@ -164,7 +164,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           <span className="font-semibold">Clear Saved Game</span>
                         </div>
                       </button>
-                      <p className="text-xs text-center text-[#8C7A6B] px-4">
+                      <p className="text-xs text-center text-[#86868B] px-4">
                         This action will reset your app back to its original state.
                       </p>
                     </motion.div>
@@ -183,7 +183,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#2D2A26]/40 backdrop-blur-sm flex flex-col items-center justify-center p-4"
+            className="absolute inset-0 z-50 bg-[#1D1D1F]/40 backdrop-blur-sm flex flex-col items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -194,8 +194,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <div className="w-16 h-16 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
-              <h3 className="text-2xl font-bold text-[#2D2A26] font-display mb-2">Are you sure?</h3>
-              <p className="text-[#6D655E] mb-8 leading-relaxed">
+              <h3 className="text-2xl font-bold text-[#1D1D1F] font-display mb-2">Are you sure?</h3>
+              <p className="text-[#515154] mb-8 leading-relaxed">
                 This will wipe your highscore and board photo. You will need to set up the game again.
               </p>
               
@@ -208,7 +208,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </button>
                 <button
                   onClick={() => setShowClearConfirm(false)}
-                  className="w-full py-3.5 bg-white hover:bg-gray-50 active:scale-[0.98] text-[#6D655E] font-bold rounded-xl transition-all cursor-pointer border border-gray-200"
+                  className="w-full py-3.5 bg-white hover:bg-gray-50 active:scale-[0.98] text-[#515154] font-bold rounded-xl transition-all cursor-pointer border border-gray-200"
                 >
                   Cancel
                 </button>
