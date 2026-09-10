@@ -9,6 +9,7 @@ import { CropPhotoScreen } from './components/CropPhotoScreen';
 import { ReassuranceScreen } from './components/ReassuranceScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { GameBoard } from './components/GameBoard';
+import { GiftScreen } from './components/GiftScreen';
 
 export default function App() {
   // Config determined by QR code / URL params
@@ -39,7 +40,7 @@ export default function App() {
         setHasSavedPhoto(true);
         setCurrentScreen('home');
       } else {
-        setCurrentScreen('welcome');
+        setCurrentScreen('gift');
       }
     });
   }, []);
@@ -118,7 +119,7 @@ export default function App() {
     setHasPlayedBefore(false);
     setActivePhoto(null);
     setHasSavedPhoto(false);
-    setCurrentScreen('welcome');
+    setCurrentScreen('gift');
   };
 
   if (currentScreen === 'initializing') {
@@ -135,6 +136,10 @@ export default function App() {
         onChange={handleFileChange}
       />
       <main className={`min-h-[100dvh] text-[#2D2A26] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#FAF7F2]'}`}>
+        {currentScreen === 'gift' && (
+          <GiftScreen onOpen={() => setCurrentScreen('welcome')} />
+        )}
+
         {currentScreen === 'welcome' && (
         <WelcomeScreen
           themeConfig={themeConfig}

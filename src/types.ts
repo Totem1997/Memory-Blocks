@@ -4,7 +4,7 @@
 
 export type AudienceType = 'adult' | 'child';
 
-export type AppScreen = 'initializing' | 'home' | 'welcome' | 'choose-photo' | 'crop-photo' | 'reassurance' | 'creating' | 'game';
+export type AppScreen = 'initializing' | 'gift' | 'home' | 'welcome' | 'choose-photo' | 'crop-photo' | 'reassurance' | 'creating' | 'game';
 
 export interface GridCell {
   color: string;
