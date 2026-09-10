@@ -33,6 +33,7 @@ interface GameBoardProps {
   audience: AudienceType;
   themeConfig: ThemeConfig;
   onChangeMemory: () => void;
+  onGoHome: () => void;
 }
 
 interface ExplosionParticle {
@@ -112,6 +113,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   audience,
   themeConfig,
   onChangeMemory,
+  onGoHome,
 }) => {
   // 8x8 Board state (null = empty cell)
   const [board, setBoard] = useState<(GridCell | null)[][]>(() =>
@@ -997,6 +999,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         onChangeMemory={() => {
           setIsPaused(false);
           onChangeMemory();
+        }}
+        onGoHome={() => {
+          setIsPaused(false);
+          onGoHome();
         }}
         onClose={() => setIsPaused(false)}
       />

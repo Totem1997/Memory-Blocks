@@ -198,6 +198,7 @@ export default function App() {
             audience={audience}
             themeConfig={themeConfig}
             onChangeMemory={handleChangeMemory}
+            onGoHome={() => setCurrentScreen('home')}
           />
           {showGameReadyPopup && (
             <GameReadyModal onClose={() => setShowGameReadyPopup(false)} />

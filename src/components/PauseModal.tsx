@@ -9,6 +9,7 @@ interface PauseModalProps {
   onResume: () => void;
   onRestart: () => void;
   onChangeMemory: () => void;
+  onGoHome: () => void;
   onClose: () => void;
   currentBgTheme: string;
   onThemeChange: (themeId: string) => void;
@@ -19,6 +20,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onResume,
   onRestart,
   onChangeMemory,
+  onGoHome,
   onClose,
   currentBgTheme,
   onThemeChange,
@@ -88,6 +90,14 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             >
               <ImageIcon className="w-3.5 h-3.5 text-[#86868B]" />
               <span>Change Photo Memory</span>
+            </button>
+
+            <button
+              id="btn-pause-main-menu"
+              onClick={onGoHome}
+              className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer mt-3"
+            >
+              <span>Main Menu</span>
             </button>
 
             {/* Theme Selector */}
