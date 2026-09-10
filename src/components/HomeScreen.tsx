@@ -75,7 +75,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-40 bg-[#F4EFE6]/90 backdrop-blur-sm flex flex-col items-center justify-end pb-8 px-4"
+            className="fixed inset-0 z-40 bg-[#1D1D1F]/40 backdrop-blur-sm flex flex-col items-center justify-end pb-8 px-4"
           >
             <motion.div
               initial={{ y: 50, opacity: 0 }}
@@ -179,7 +179,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#1D1D1F]/40 backdrop-blur-sm flex flex-col items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-[#1D1D1F]/40 backdrop-blur-sm flex flex-col items-center justify-center p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
