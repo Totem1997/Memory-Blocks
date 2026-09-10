@@ -41,17 +41,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         transition={{ duration: 0.5 }}
         className="flex flex-col items-center text-center my-auto w-full"
       >
-        <div className="w-20 h-20 bg-white rounded-3xl shadow-sm border border-[#E5E5EA] flex items-center justify-center mb-8">
-          <Play className="w-10 h-10 text-[#E68A5C] fill-[#E68A5C]/20 ml-1" />
+        <div className="w-full flex justify-center mb-12">
+          <img 
+            src="/Memory Blocks Game Logo.png" 
+            alt="Memory Blocks" 
+            className="w-full h-auto max-w-[320px] drop-shadow-md"
+          />
         </div>
-        
-        <h1 className="text-4xl font-extrabold text-[#1D1D1F] font-display tracking-tight leading-tight mb-3">
-          Your Memory <br/>Puzzle
-        </h1>
-        
-        <p className="text-[#515154] text-base mb-12">
-          Welcome back! Ready to continue piecing together your memory?
-        </p>
 
         <div className="w-full max-w-[280px] space-y-4">
           <button
