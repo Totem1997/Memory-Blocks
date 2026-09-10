@@ -1,19 +1,20 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Camera, Image as ImageIcon, ArrowLeft, ArrowRight, Upload } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { ThemeConfig } from '../types';
 
 interface ChoosePhotoScreenProps {
+  themeConfig: ThemeConfig;
   onPhotoSelected: (dataUrl: string) => void;
   onBack: () => void;
 }
 
 export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
+  themeConfig,
   onPhotoSelected,
   onBack,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,15 +44,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
       id="choose-photo-screen"
       className="relative flex flex-col min-h-screen px-6 py-8 max-w-md mx-auto select-none bg-transparent"
     >
-      {/* Hidden file inputs */}
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="user"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -64,10 +57,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
       <div className="flex items-center justify-between w-full pt-2 mb-8">
         <button
           id="btn-choose-photo-back"
-          onClick={() => {
-            if (step > 1) setStep((s) => (s - 1) as 1 | 2 | 3);
-            else onBack();
-          }}
+          onClick={onBack}
           className="p-2 -ml-2 rounded-full hover:bg-white/50 text-[#515154] transition-colors cursor-pointer"
           aria-label="Go back"
         >
@@ -76,130 +66,39 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
         <div className="w-8" />
       </div>
 
-      <div className="flex-1 flex flex-col justify-center">
+      <div className="flex-1 flex flex-col justify-start pt-8">
         <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-center"
-            >
-              <h1 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
-                What is your favorite memory together?
-              </h1>
-              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
-                Take a moment to find a photo with the person behind this surprise that always makes you smile. If you have it saved on your device, we will turn it into something special.
-              </p>
+          <motion.div
+            key="step1"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -20, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-center"
+          >
+            <h1 className="text-4xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-6">
+              Choose your favorite memory
+            </h1>
+            <p className="text-[#515154] text-lg max-w-sm mx-auto mb-10 leading-relaxed">
+              Take a moment to find a memory that always makes you smile. It can be a photo together with the person who gifted you this, your favorite cute pet photo, or any photo that really inspires you. If you have it saved on your device, we can turn it into something fun.
+            </p>
 
-              {errorMsg && (
-                <div className="mb-6 p-3 rounded-xl bg-red-50 text-red-600 text-xs font-medium border border-red-200">
-                  {errorMsg}
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
-                >
-                  <ImageIcon className="w-5 h-5 text-[#FDE047]" />
-                  <span>I HAVE A PHOTO</span>
-                </button>
-                <button
-                  onClick={() => setStep(2)}
-                  className="w-full py-3 px-4 text-[#86868B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
-                >
-                  <span className="underline underline-offset-4 decoration-[#E5E5EA]">I don't have one handy</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+            {errorMsg && (
+              <div className="mb-6 p-3 rounded-xl bg-red-50 text-red-600 text-xs font-medium border border-red-200">
+                {errorMsg}
               </div>
-            </motion.div>
-          )}
+            )}
 
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-center"
-            >
-              <h1 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4">
-                That&apos;s perfectly okay.
-              </h1>
-              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
-                The best time to capture a beautiful moment is right now. If they are with you, let&apos;s take a new photo together and let the magic begin.
-              </p>
-
-              {errorMsg && (
-                <div className="mb-6 p-3 rounded-xl bg-red-50 text-red-600 text-xs font-medium border border-red-200">
-                  {errorMsg}
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <button
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
-                >
-                  <Camera className="w-5 h-5 text-[#7DD3FC]" />
-                  <span>TAKE A SELFIE</span>
-                </button>
-                <button
-                  onClick={() => setStep(3)}
-                  className="w-full py-3 px-4 text-[#86868B] hover:text-[#5C534B] font-semibold text-sm transition-colors cursor-pointer inline-flex items-center justify-center gap-2"
-                >
-                  <span className="underline underline-offset-4 decoration-[#E5E5EA]">They aren't here right now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-center"
-            >
-              <h1 className="text-2xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-4 leading-tight">
-                You&apos;re the star of this surprise!
-              </h1>
-              <p className="text-[#515154] text-base max-w-xs mx-auto mb-10 leading-relaxed">
-                Since this experience was made especially for you, a photo of yourself is absolutely perfect. Let&apos;s capture one right now or pick your favorite photo (e.g. with your pets, in your favorite place or moment, etc.) and let the magic unfold.
-              </p>
-
-              {errorMsg && (
-                <div className="mb-6 p-3 rounded-xl bg-red-50 text-red-600 text-xs font-medium border border-red-200">
-                  {errorMsg}
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <button
-                  onClick={() => cameraInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
-                >
-                  <Camera className="w-5 h-5 text-[#FDE047]" />
-                  <span>TAKE A SELFIE</span>
-                </button>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#1D1D1F] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5E5EA] shadow-sm cursor-pointer"
-                >
-                  <ImageIcon className="w-5 h-5 text-[#86868B]" />
-                  <span>CHOOSE A PHOTO</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
+            <div className="space-y-4">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-3 font-display tracking-wide cursor-pointer"
+              >
+                <ImageIcon className="w-5 h-5 text-[#FDE047]" />
+                <span>CHOOSE A PHOTO</span>
+              </button>
+            </div>
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>
