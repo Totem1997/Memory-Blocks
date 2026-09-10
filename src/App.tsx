@@ -10,6 +10,7 @@ import { ReassuranceScreen } from './components/ReassuranceScreen';
 import { LoadingScreen } from './components/LoadingScreen';
 import { GameBoard } from './components/GameBoard';
 import { GiftScreen } from './components/GiftScreen';
+import { GameReadyModal } from './components/GameReadyModal';
 
 export default function App() {
   // Config determined by QR code / URL params
@@ -18,6 +19,7 @@ export default function App() {
 
   // App navigation state
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('initializing');
+  const [showGameReadyPopup, setShowGameReadyPopup] = useState(false);
   const [hasPlayedBefore, setHasPlayedBefore] = useState<boolean>(() => {
     return localStorage.getItem('hasPlayedBefore') === 'true';
   });
@@ -79,6 +81,9 @@ export default function App() {
   };
 
   const handleLoadingFinished = () => {
+    if (!hasPlayedBefore) {
+      setShowGameReadyPopup(true);
+    }
     setHasPlayedBefore(true);
     localStorage.setItem('hasPlayedBefore', 'true');
     setCurrentScreen('game');
@@ -187,12 +192,17 @@ export default function App() {
       )}
 
       {currentScreen === 'game' && activePhoto && (
-        <GameBoard
-          photoSrc={activePhoto}
-          audience={audience}
-          themeConfig={themeConfig}
-          onChangeMemory={handleChangeMemory}
-        />
+        <>
+          <GameBoard
+            photoSrc={activePhoto}
+            audience={audience}
+            themeConfig={themeConfig}
+            onChangeMemory={handleChangeMemory}
+          />
+          {showGameReadyPopup && (
+            <GameReadyModal onClose={() => setShowGameReadyPopup(false)} />
+          )}
+        </>
       )}
       </main>
     </>
