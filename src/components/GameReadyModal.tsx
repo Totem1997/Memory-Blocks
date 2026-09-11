@@ -68,7 +68,7 @@ export const GameReadyModal: React.FC<GameReadyModalProps> = ({ onClose }) => {
           
           <div className="space-y-4 text-[#515154] text-base leading-relaxed mb-8">
             <p>
-              Your favorite memory turned into a relaxing puzzle game! Place the blocks to clear lines and see how high you can score.
+              Your favorite memory turned into a fun puzzle game! Place the blocks to clear lines and see how high you can score.
             </p>
             <p>
               Every time you return to play, you'll unlock a special new inspirational reward. Ready to jump in?
