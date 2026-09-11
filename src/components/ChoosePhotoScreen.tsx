@@ -80,7 +80,7 @@ export const ChoosePhotoScreen: React.FC<ChoosePhotoScreenProps> = ({
               Choose your favorite memory
             </h1>
             <p className="text-[#515154] text-lg max-w-sm mx-auto mb-10 leading-relaxed">
-              Take a moment to find a memory that always makes you smile. It can be a photo together with the person who gifted you this, your favorite cute pet photo, or any photo that really inspires you. If you have it saved on your device, we can turn it into something fun.
+              Take a moment to find a memory that always makes you smile. It can be a photo with the person who gifted you this, a family or friends photo, your favorite cute pet photo, or any photo that really inspires you, and let's turn it into something fun.
             </p>
 
             {errorMsg && (
