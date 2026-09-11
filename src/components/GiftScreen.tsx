@@ -9,8 +9,7 @@ interface GiftScreenProps {
 export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen px-6 max-w-md mx-auto select-none text-center bg-[#F5F5F7] cursor-pointer"
-      onClick={onOpen}
+      className="flex flex-col items-center pt-32 min-h-screen px-6 max-w-md mx-auto select-none text-center bg-[#F5F5F7]"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -18,10 +17,10 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="flex flex-col items-center w-full"
       >
-        <div className="w-full max-w-[320px] mb-8 mt-12 h-24 relative overflow-visible">
-          <svg viewBox="0 0 320 100" className="w-full h-full overflow-visible">
-            <path id="curve" d="M 20,90 Q 160,20 300,90" fill="transparent" />
-            <text className="text-[17px] font-bold tracking-[0.1em] fill-[#1D1D1F] uppercase font-display" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <div className="w-full max-w-[380px] mb-12 h-32 relative overflow-visible">
+          <svg viewBox="0 0 380 120" className="w-full h-full overflow-visible">
+            <path id="curve" d="M 10,110 Q 190,10 370,110" fill="transparent" />
+            <text className="text-[23px] font-extrabold tracking-[0.08em] fill-[#1D1D1F] uppercase font-display" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
               <textPath href="#curve" startOffset="50%" textAnchor="middle">
                 A GIFT IS WAITING FOR YOU
               </textPath>
@@ -30,6 +29,7 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
         </div>
 
         <motion.div
+          onClick={onOpen}
           animate={{ 
             y: [-10, 10, -10],
             scale: [1, 1.05, 1],
@@ -39,7 +39,7 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
             repeat: Infinity, 
             ease: "easeInOut" 
           }}
-          className="relative mb-16 text-[#E11D48]"
+          className="relative mb-16 text-[#E11D48] cursor-pointer p-8 rounded-full"
         >
           {/* Subtle glow behind the gift */}
           <div className="absolute inset-0 bg-[#E11D48]/20 blur-xl rounded-full scale-150 animate-pulse" />
