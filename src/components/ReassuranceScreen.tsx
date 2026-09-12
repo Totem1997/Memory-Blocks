@@ -29,7 +29,7 @@ export const ReassuranceScreen: React.FC<ReassuranceScreenProps> = ({
         </h1>
         
         <p className="text-[#515154] text-lg max-w-xs mx-auto mb-10 leading-relaxed">
-          Just so you know, you can always change this picture later if you want.
+          Want to see how other memories look? You can always try a different photo later!
         </p>
 
         <button

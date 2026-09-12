@@ -25,7 +25,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         className="relative z-10 flex flex-col items-center w-full my-auto"
       >
         <h1 className="text-4xl sm:text-5xl font-extrabold text-[#1D1D1F] font-display tracking-wide leading-[1.1] mb-6">
-          {themeConfig.welcomeHeadline}
+          A <span className="text-[#3B82F6]">G</span><span className="text-[#EF4444]">A</span><span className="text-[#10B981]">M</span><span className="text-[#F59E0B]">E</span> MADE FROM A FAVORITE MEMORY
         </h1>
 
         <div className="space-y-4 max-w-[280px] mx-auto text-[#515154] text-lg leading-relaxed">

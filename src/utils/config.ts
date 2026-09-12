@@ -3,7 +3,7 @@ import { AudienceType, ThemeConfig } from '../types';
 export const APP_CONFIG: ThemeConfig = {
   name: 'Memory Blocks',
   welcomeHeadline: 'A GAME MADE FROM A FAVORITE MEMORY',
-  welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The person who gave you this wants to turn your favorite memories into a fun experience.',
+  welcomeSubtext: 'Time flies, but the moments we cherish always stay with us. The awesome person who gave you this wants to turn your favorite memories into a fun experience.',
   accentColor: '#E11D48',
   bgDotColor: '#F59E0B',
   tagline: 'A favorite memory turned into a game',
