@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, RotateCcw, Share } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface GameOverModalProps {
   isOpen: boolean;
@@ -20,6 +21,13 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
 }) => {
   const scoreCardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      setGamesPlayed(parseInt(localStorage.getItem('gamesPlayed') || '0', 10));
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

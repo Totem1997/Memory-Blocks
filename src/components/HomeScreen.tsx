@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Settings, Image as ImageIcon, Trash2, X, AlertTriangle, ChevronRight, ChevronLeft } from 'lucide-react';
 import { ThemeConfig } from '../types';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface HomeScreenProps {
   themeConfig: ThemeConfig;
@@ -58,6 +59,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <span>PLAY</span>
           </button>
           
+          <PWAInstallButton />
+
           <button
             onClick={() => setIsSettingsOpen(true)}
             className="w-full py-4 px-6 bg-white hover:bg-white/70 active:scale-[0.98] text-[#1D1D1F] font-bold text-base rounded-2xl transition-all flex items-center justify-center gap-3 font-display tracking-wide border border-[#E5E5EA] shadow-sm cursor-pointer"

@@ -7,17 +7,19 @@ interface GiftScreenProps {
 }
 
 export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
+  const [imgError, setImgError] = React.useState(false);
+
   return (
     <div
-      className="flex flex-col items-center pt-32 min-h-screen px-6 max-w-md mx-auto select-none text-center bg-[#F5F5F7]"
+      className="flex flex-col items-center justify-center min-h-screen px-6 py-10 max-w-md mx-auto select-none text-center bg-[#F5F5F7]"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="flex flex-col items-center w-full"
+        className="flex flex-col items-center w-full my-auto"
       >
-        <div className="w-full max-w-[380px] mb-12 h-32 relative overflow-visible">
+        <div className="w-full max-w-[380px] mb-6 h-28 relative overflow-visible">
           <svg viewBox="0 0 380 120" className="w-full h-full overflow-visible">
             <path id="curve" d="M 10,110 Q 190,10 370,110" fill="transparent" />
             <text className="text-[23px] font-extrabold tracking-[0.08em] fill-[#1D1D1F] uppercase font-display" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -39,11 +41,22 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
             repeat: Infinity, 
             ease: "easeInOut" 
           }}
-          className="relative mb-16 text-[#E11D48] cursor-pointer p-8 rounded-full"
+          className="relative mb-10 cursor-pointer p-3 rounded-full flex items-center justify-center active:scale-95 transition-transform"
         >
-          {/* Subtle glow behind the gift */}
-          <div className="absolute inset-0 bg-[#E11D48]/20 blur-xl rounded-full scale-150 animate-pulse" />
-          <Gift className="w-24 h-24 relative z-10" strokeWidth={1.5} />
+          {/* Subtle warm glow behind the gift */}
+          <div className="absolute inset-0 bg-[#E11D48]/15 blur-2xl rounded-full scale-125 animate-pulse pointer-events-none" />
+          
+          {!imgError ? (
+            <img
+              src="/gift_box.png"
+              alt="Gift Box"
+              referrerPolicy="no-referrer"
+              onError={() => setImgError(true)}
+              className="w-48 h-48 object-contain relative z-10 drop-shadow-xl select-none pointer-events-none"
+            />
+          ) : (
+            <Gift className="w-24 h-24 relative z-10 text-[#E11D48]" strokeWidth={1.5} />
+          )}
         </motion.div>
 
         <motion.p
@@ -51,7 +64,7 @@ export const GiftScreen: React.FC<GiftScreenProps> = ({ onOpen }) => {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="text-sm font-semibold tracking-wider text-[#86868B] uppercase font-display"
         >
-          Click to open!
+          Tap to open!
         </motion.p>
       </motion.div>
     </div>
