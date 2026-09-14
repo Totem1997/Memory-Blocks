@@ -5,8 +5,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
 }
 
+// Global variable to capture the prompt event across unmounts/remounts
+let globalDeferredPrompt: BeforeInstallPromptEvent | null = null;
+
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(globalDeferredPrompt);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
@@ -24,11 +27,13 @@ export function usePWAInstall() {
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      globalDeferredPrompt = e as BeforeInstallPromptEvent;
+      setDeferredPrompt(globalDeferredPrompt);
     };
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
+      globalDeferredPrompt = null;
       setDeferredPrompt(null);
     };
 
@@ -47,6 +52,7 @@ export function usePWAInstall() {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       setIsInstalled(true);
+      globalDeferredPrompt = null;
       setDeferredPrompt(null);
       return true;
     }
