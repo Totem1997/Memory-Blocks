@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Image as ImageIcon, Volume2, VolumeX, X } from 'lucide-react';
 import { isSoundEnabled, setSoundEnabled } from '../utils/audio';
 import { BACKGROUND_THEMES } from '../utils/bgThemes';
+import { NotificationBadge } from './NotificationBadge';
+import { useNotificationBadge } from '../hooks/useNotificationBadge';
 
 interface PauseModalProps {
   isOpen: boolean;
@@ -26,6 +28,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onThemeChange,
 }) => {
   const [sound, setSound] = React.useState(isSoundEnabled());
+  const { showBadge } = useNotificationBadge();
 
   if (!isOpen) return null;
 
@@ -95,8 +98,9 @@ export const PauseModal: React.FC<PauseModalProps> = ({
             <button
               id="btn-pause-main-menu"
               onClick={onGoHome}
-              className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer mt-3"
+              className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer mt-3 relative"
             >
+              {showBadge && <NotificationBadge />}
               <span>Main Menu</span>
             </button>
 

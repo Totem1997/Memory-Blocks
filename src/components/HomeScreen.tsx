@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Settings, Image as ImageIcon, Trash2, X, AlertTriangle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Play, Settings, Image as ImageIcon, Trash2, X, AlertTriangle, ChevronRight, ChevronLeft, Shield } from 'lucide-react';
 import { ThemeConfig } from '../types';
 import { PWAInstallButton } from './PWAInstallButton';
 
@@ -18,7 +18,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onClearGame
 }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [settingsView, setSettingsView] = useState<'main' | 'other'>('main');
+  const [settingsView, setSettingsView] = useState<'main' | 'other' | 'privacy'>('main');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const handleClearGame = () => {
@@ -84,11 +84,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
-              className="w-full max-w-md bg-white rounded-[2rem] shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col h-[280px]"
+              className="w-full max-w-md bg-white rounded-[2rem] shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col h-[400px]"
             >
               <div className="flex justify-between items-center p-6 border-b border-[#F4EFE6] shrink-0">
                 <div className="flex items-center gap-2">
-                  {settingsView === 'other' && (
+                  {(settingsView === 'other' || settingsView === 'privacy') && (
                     <button 
                       onClick={() => setSettingsView('main')}
                       className="p-1 -ml-1 text-[#86868B] hover:bg-[#F4EFE6] rounded-full transition-colors cursor-pointer"
@@ -97,7 +97,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     </button>
                   )}
                   <h2 className="text-xl font-bold text-[#1D1D1F] font-display">
-                    {settingsView === 'main' ? 'Settings' : 'Other Options'}
+                    {settingsView === 'main' ? 'Settings' : settingsView === 'other' ? 'Other Options' : 'Privacy & Data'}
                   </h2>
                 </div>
                 <button 
@@ -142,6 +142,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                         </div>
                         <ChevronRight className="w-5 h-5 text-[#86868B]" />
                       </button>
+
+                      <button
+                        onClick={() => setSettingsView('privacy')}
+                        className="w-full flex items-center justify-between p-4 bg-white hover:bg-[#F4EFE6]/30 border border-[#F4EFE6] rounded-xl transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Shield className="w-5 h-5 text-[#86868B]" />
+                          <span className="font-semibold text-[#515154]">Privacy & Data</span>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-[#86868B]" />
+                      </button>
                     </motion.div>
                   )}
 
@@ -165,6 +176,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       </button>
                       <p className="text-xs text-center text-[#86868B] px-4">
                         This action will reset your app back to its original state.
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {settingsView === 'privacy' && (
+                    <motion.div
+                      key="privacy-view"
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: 20, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute inset-0 p-6 space-y-4 overflow-y-auto"
+                    >
+                      <h3 className="font-bold text-[#1D1D1F] font-display">Your Data Stays Yours.</h3>
+                      <p className="text-sm text-[#515154] leading-relaxed">
+                        This game was designed with your privacy in mind. It does not collect, transmit, or store any personal information.
+                      </p>
+                      
+                      <h3 className="font-bold text-[#1D1D1F] font-display mt-6">Local Saving Only</h3>
+                      <p className="text-sm text-[#515154] leading-relaxed mb-6">
+                        Your high scores, settings, and game progress are saved directly on your device. If you clear your browser cache or uninstall the app, your data will be reset. No data is ever sent to a server.
                       </p>
                     </motion.div>
                   )}

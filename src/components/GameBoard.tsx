@@ -26,6 +26,8 @@ import { getStoredItem, setStoredItem } from '../utils/storage';
 import { RewardModal } from './RewardModal';
 import { PauseModal } from './PauseModal';
 import { GameOverModal } from './GameOverModal';
+import { NotificationBadge } from './NotificationBadge';
+import { useNotificationBadge } from '../hooks/useNotificationBadge';
 import { BACKGROUND_THEMES } from '../utils/bgThemes';
 
 interface GameBoardProps {
@@ -137,6 +139,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   
+  const { showBadge } = useNotificationBadge();
+
   // Background Theme
   const [bgThemeId, setBgThemeId] = useState<string>(() => {
     // Cannot be async here, fallback to local storage synchronously if needed or just wait.
@@ -661,9 +665,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         <button
           id="btn-pause"
           onClick={() => setIsPaused(true)}
-          className="w-11 h-11 rounded-full bg-white/50 backdrop-blur-md border border-white/50 shadow-sm flex items-center justify-center text-indigo-950 hover:bg-white/60 active:scale-95 transition-all cursor-pointer"
+          className="w-11 h-11 rounded-full bg-white/50 backdrop-blur-md border border-white/50 shadow-sm flex items-center justify-center text-indigo-950 hover:bg-white/60 active:scale-95 transition-all cursor-pointer relative"
           aria-label="Pause game"
         >
+          {showBadge && <NotificationBadge />}
           <Pause className="w-5 h-5 fill-current text-indigo-950" />
         </button>
 
