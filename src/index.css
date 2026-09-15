@@ -3,6 +3,7 @@
 @layer base {
   :root {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color-scheme: light;
   }
 
   h1, h2, h3, .font-display {
