@@ -41,10 +41,10 @@ export const PWAInstallButton: React.FC = () => {
             <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center">
               <h3 className="text-2xl font-bold text-[#1D1D1F] font-display mb-4 text-center">Add to Home Screen</h3>
               <p className="text-base text-[#515154] leading-relaxed mb-4">
-                Get the full experience! Adding this game to your device lets you play your favorite memories entirely offline, anywhere you go, and opens in full-screen just like a native app.
+                Get the full experience! Adding this game to your device lets you play your favorite memories in puzzle form entirely offline, anywhere you go.
               </p>
               <p className="text-sm italic text-[#515154] opacity-80 leading-relaxed mb-8 text-center">
-                Note: After you continue, it may take a few seconds to process in the background before the icon appears on your home screen.
+                Note: After you continue, it may take a few seconds before the game icon appears on your home screen.
               </p>
               <button
                 onClick={() => {
@@ -86,7 +86,7 @@ export const PWAInstallButton: React.FC = () => {
             <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center">
               <h3 className="text-2xl font-bold text-[#1D1D1F] font-display mb-4 text-center">Add to Home Screen</h3>
               <p className="text-base text-[#515154] leading-relaxed mb-4 w-full">
-                Get the full experience! Adding this game to your device lets you play your favorite memories entirely offline, anywhere you go, and opens in full-screen just like a native app.
+                Get the full experience! Adding this game to your device lets you play your favorite memories in puzzle form entirely offline, anywhere you go.
               </p>
               <p className="text-base text-[#515154] leading-relaxed mb-8 w-full">
                 <strong>1.</strong> Tap the <strong>Share</strong> button (the square with an arrow pointing up) at the very bottom edge of your screen.<br /><br />
