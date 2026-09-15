@@ -121,6 +121,8 @@ export default function App() {
   const handleClearGame = async () => {
     await clearAllData();
     localStorage.removeItem('hasPlayedBefore');
+    localStorage.removeItem('pwaBadgeDismissed');
+    localStorage.removeItem('gamesPlayed');
     setHasPlayedBefore(false);
     setActivePhoto(null);
     setHasSavedPhoto(false);

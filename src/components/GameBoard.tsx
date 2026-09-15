@@ -426,6 +426,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       // Delay slightly for natural pacing
       const timer = setTimeout(() => {
         playGameOverSound();
+        const played = parseInt(localStorage.getItem('gamesPlayed') || '0', 10) + 1;
+        localStorage.setItem('gamesPlayed', played.toString());
+        window.dispatchEvent(new Event('gamesPlayedUpdated'));
         setIsGameOver(true);
       }, 600);
       return () => clearTimeout(timer);

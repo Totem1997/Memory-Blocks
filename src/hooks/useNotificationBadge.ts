@@ -35,15 +35,17 @@ export function useNotificationBadge() {
     // Initial check
     checkBadgeStatus();
 
-    // Listen for custom event to update status instantly when dismissed
-    const handleBadgeDismissed = () => {
+    // Listen for custom events to update status instantly
+    const handleStatusUpdate = () => {
       checkBadgeStatus();
     };
 
-    window.addEventListener('pwaBadgeDismissed', handleBadgeDismissed);
+    window.addEventListener('pwaBadgeDismissed', handleStatusUpdate);
+    window.addEventListener('gamesPlayedUpdated', handleStatusUpdate);
 
     return () => {
-      window.removeEventListener('pwaBadgeDismissed', handleBadgeDismissed);
+      window.removeEventListener('pwaBadgeDismissed', handleStatusUpdate);
+      window.removeEventListener('gamesPlayedUpdated', handleStatusUpdate);
     };
   }, [isInstallable, isInstalled, isIOS]);
 
