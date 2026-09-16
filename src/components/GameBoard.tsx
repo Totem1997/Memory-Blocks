@@ -749,15 +749,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
           >
             {/* 1. PHOTO LAYER UNDERNEATH GRID (Continuous photo with softened filter ensuring white grid prominence) */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-2xl sm:rounded-[1.5rem]">
               <img
                 src={photoSrc}
                 alt="Personal memory background"
-                className="w-full h-full object-cover pointer-events-none select-none"
+                className="w-full h-full object-cover pointer-events-none select-none rounded-2xl sm:rounded-[1.5rem]"
                 referrerPolicy="no-referrer"
               />
               {/* Very slight dark overlay to ensure grid lines remain visible on bright/white photos */}
-              <div className="absolute inset-0 bg-black/[0.15] pointer-events-none" />
+              <div className="absolute inset-0 bg-black/[0.15] pointer-events-none rounded-2xl sm:rounded-[1.5rem]" />
             </div>
 
             {/* 2. STRAIGHT GRIDLINES LAYER */}
