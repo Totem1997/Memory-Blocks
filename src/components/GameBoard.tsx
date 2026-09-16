@@ -739,25 +739,25 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         {/* Outer warm bezel container */}
         <div
           id="game-board-bezel"
-          className="relative w-full aspect-square max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white shadow-[12px_16px_24px_-8px_rgba(0,0,0,0.6),0_4px_8px_rgba(0,0,0,0.1)] ring-1 ring-black/5"
+          className="relative w-full max-w-[370px] sm:max-w-[400px] p-3 sm:p-4 rounded-[2rem] sm:rounded-[2.5rem] bg-white shadow-[12px_16px_24px_-8px_rgba(0,0,0,0.6),0_4px_8px_rgba(0,0,0,0.1)] ring-1 ring-black/5 shrink-0"
         >
           {/* Inner 8x8 Game Grid Container */}
           <div
             ref={boardRef}
             id="game-board-grid"
-            className="relative w-full h-full rounded-2xl sm:rounded-[1.5rem] overflow-hidden shadow-inner [transform:translateZ(0)]"
+            className="relative w-full aspect-square rounded-2xl sm:rounded-[1.5rem] overflow-hidden shadow-inner [transform:translateZ(0)]"
             style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
           >
             {/* 1. PHOTO LAYER UNDERNEATH GRID (Continuous photo with softened filter ensuring white grid prominence) */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-2xl sm:rounded-[1.5rem]">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <img
                 src={photoSrc}
                 alt="Personal memory background"
-                className="w-full h-full object-cover pointer-events-none select-none rounded-2xl sm:rounded-[1.5rem]"
+                className="w-full h-full object-cover pointer-events-none select-none"
                 referrerPolicy="no-referrer"
               />
               {/* Very slight dark overlay to ensure grid lines remain visible on bright/white photos */}
-              <div className="absolute inset-0 bg-black/[0.15] pointer-events-none rounded-2xl sm:rounded-[1.5rem]" />
+              <div className="absolute inset-0 bg-black/[0.15] pointer-events-none" />
             </div>
 
             {/* 2. STRAIGHT GRIDLINES LAYER */}

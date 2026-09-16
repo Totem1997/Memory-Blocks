@@ -180,8 +180,8 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
           ref={containerRef}
           className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-2xl overflow-hidden bg-neutral-900 border-2 border-[#DCD3C7] shadow-lg cursor-grab active:cursor-grabbing touch-none select-none [transform:translateZ(0)]"
           style={{ 
-            WebkitMaskImage: '-webkit-radial-gradient(white, black)',
-            clipPath: 'inset(0 round 1rem)'
+            WebkitMaskImage: '-webkit-radial-gradient(white, black)'
+            
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
