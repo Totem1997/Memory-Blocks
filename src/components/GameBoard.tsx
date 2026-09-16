@@ -745,7 +745,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           <div
             ref={boardRef}
             id="game-board-grid"
-            className="relative w-full h-full rounded-2xl sm:rounded-[1.5rem] overflow-hidden shadow-inner"
+            className="relative w-full h-full rounded-2xl sm:rounded-[1.5rem] overflow-hidden shadow-inner [transform:translateZ(0)]"
+            style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
           >
             {/* 1. PHOTO LAYER UNDERNEATH GRID (Continuous photo with softened filter ensuring white grid prominence) */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
