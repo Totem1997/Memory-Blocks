@@ -11,6 +11,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { GameBoard } from './components/GameBoard';
 import { GiftScreen } from './components/GiftScreen';
 import { GameReadyModal } from './components/GameReadyModal';
+import { PortraitLock } from './components/PortraitLock';
 
 export default function App() {
   // Config determined by QR code / URL params
@@ -135,6 +136,7 @@ export default function App() {
 
   return (
     <>
+      <PortraitLock />
       <input
         ref={fileInputRef}
         type="file"

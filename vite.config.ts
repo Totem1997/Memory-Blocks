@@ -17,6 +17,7 @@ export default defineConfig(() => {
           name: 'Memory Blocks',
           short_name: 'MemBlocks',
           description: 'A favorite memory turned into a game',
+          orientation: 'portrait',
           theme_color: '#F5F5F7',
           background_color: '#F5F5F7',
           display: 'standalone',

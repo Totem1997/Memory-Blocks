@@ -1,0 +1,62 @@
+import React, { useState, useEffect } from 'react';
+import { Smartphone } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export const PortraitLock: React.FC = () => {
+  const [isLandscapeMobile, setIsLandscapeMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if the device is a mobile device in landscape mode
+    const checkOrientation = () => {
+      // Coarse pointer indicates a touch device (mobile/tablet)
+      const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+      
+      // We only want to block mobile/touch devices in landscape, 
+      // not desktop computers which are naturally landscape.
+      setIsLandscapeMobile(isTouch && isLandscape && window.innerHeight < 600);
+    };
+
+    // Check on mount
+    checkOrientation();
+
+    // Listen for resize/orientation changes
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+    };
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isLandscapeMobile && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] bg-[#1D1D1F] flex flex-col items-center justify-center text-white px-6 text-center select-none"
+        >
+          <motion.div
+            animate={{ rotate: -90 }}
+            transition={{ 
+              repeat: Infinity, 
+              duration: 2, 
+              ease: "easeInOut",
+              repeatType: "reverse"
+            }}
+            className="mb-8"
+          >
+            <Smartphone className="w-20 h-20 text-white" strokeWidth={1.5} />
+          </motion.div>
+          <h2 className="text-2xl font-bold font-display mb-4">Please Rotate Your Phone</h2>
+          <p className="text-[#86868B] max-w-[280px] leading-relaxed text-base">
+            This game is designed to be played in vertical portrait mode. Please rotate your device back to continue playing.
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
