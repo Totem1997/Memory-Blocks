@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppScreen, AudienceType, ThemeConfig } from './types';
-import { parseAppConfig } from './utils/config';
+import { parseAppConfig, isTrialCompleted, resetTrialForTesting } from './utils/config';
 import { getStoredItem, setStoredItem, clearAllData } from './utils/storage';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { HomeScreen } from './components/HomeScreen';
@@ -12,11 +12,13 @@ import { GameBoard } from './components/GameBoard';
 import { GiftScreen } from './components/GiftScreen';
 import { GameReadyModal } from './components/GameReadyModal';
 import { PortraitLock } from './components/PortraitLock';
+import { TrialExpiredScreen } from './components/TrialExpiredScreen';
 
 export default function App() {
   // Config determined by QR code / URL params
   const [audience, setAudience] = useState<AudienceType>('adult');
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(() => parseAppConfig().themeConfig);
+  const [isTrialSession, setIsTrialSession] = useState<boolean>(() => parseAppConfig().isTrial);
 
   // App navigation state
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('initializing');
@@ -36,6 +38,19 @@ export default function App() {
     const config = parseAppConfig();
     setAudience(config.audience);
     setThemeConfig(config.themeConfig);
+    setIsTrialSession(config.isTrial);
+
+    // If entered via trial and trial is already completed, show expired screen immediately
+    if (config.isTrial && isTrialCompleted()) {
+      setCurrentScreen('trial-expired');
+      return;
+    }
+
+    // If entered via trial mode, let user experience fresh photo setup
+    if (config.isTrial) {
+      setCurrentScreen('gift');
+      return;
+    }
 
     getStoredItem<string | null>('photo', null).then((saved) => {
       if (saved) {
@@ -119,6 +134,13 @@ export default function App() {
     fileInputRef.current?.click();
   };
 
+  const handleResetTrial = () => {
+    resetTrialForTesting();
+    setActivePhoto(null);
+    setRawPhotoSrc(null);
+    setCurrentScreen('gift');
+  };
+
   const handleClearGame = async () => {
     await clearAllData();
     localStorage.removeItem('hasPlayedBefore');
@@ -145,6 +167,10 @@ export default function App() {
         onChange={handleFileChange}
       />
       <main className={`min-h-[100dvh] text-[#1D1D1F] flex flex-col justify-center ${currentScreen === 'game' ? 'bg-transparent' : 'bg-[#F5F5F7]'}`}>
+        {currentScreen === 'trial-expired' && (
+          <TrialExpiredScreen onResetTrial={handleResetTrial} />
+        )}
+
         {currentScreen === 'gift' && (
           <GiftScreen onOpen={() => setCurrentScreen('welcome')} />
         )}
@@ -202,7 +228,15 @@ export default function App() {
             audience={audience}
             themeConfig={themeConfig}
             onChangeMemory={handleChangeMemory}
-            onGoHome={() => setCurrentScreen('home')}
+            onGoHome={() => {
+              if (isTrialSession) {
+                setCurrentScreen('welcome');
+              } else {
+                setCurrentScreen('home');
+              }
+            }}
+            isTrial={isTrialSession}
+            onFinishTrial={() => setCurrentScreen('trial-expired')}
           />
           {showGameReadyPopup && (
             <GameReadyModal onClose={() => setShowGameReadyPopup(false)} />

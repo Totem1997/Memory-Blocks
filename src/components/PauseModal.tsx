@@ -15,6 +15,7 @@ interface PauseModalProps {
   onClose: () => void;
   currentBgTheme: string;
   onThemeChange: (themeId: string) => void;
+  isTrial?: boolean;
 }
 
 export const PauseModal: React.FC<PauseModalProps> = ({
@@ -26,6 +27,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   onClose,
   currentBgTheme,
   onThemeChange,
+  isTrial = false,
 }) => {
   const [sound, setSound] = React.useState(isSoundEnabled());
   const { showBadge } = useNotificationBadge();
@@ -75,25 +77,37 @@ export const PauseModal: React.FC<PauseModalProps> = ({
               <span>Resume</span>
             </button>
 
-            {/* Restart button */}
-            <button
-              id="btn-pause-restart"
-              onClick={onRestart}
-              className="w-full py-3.5 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#1D1D1F] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5E5EA] cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4 text-[#86868B]" />
-              <span>Restart Run</span>
-            </button>
+            {/* Restart button - hidden during 1-session trial */}
+            {!isTrial && (
+              <button
+                id="btn-pause-restart"
+                onClick={onRestart}
+                className="w-full py-3.5 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#1D1D1F] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 font-display border border-[#E5E5EA] cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4 text-[#86868B]" />
+                <span>Restart Run</span>
+              </button>
+            )}
 
-            {/* Change memory button */}
-            <button
-              id="btn-pause-change-memory"
-              onClick={onChangeMemory}
-              className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
-            >
-              <ImageIcon className="w-3.5 h-3.5 text-[#86868B]" />
-              <span>Change Photo Memory</span>
-            </button>
+            {/* Change memory button - hidden during 1-session trial */}
+            {!isTrial && (
+              <button
+                id="btn-pause-change-memory"
+                onClick={onChangeMemory}
+                className="w-full py-3 px-4 bg-[#E5E5EA] hover:bg-[#EAE1D7] active:scale-[0.98] text-[#5C534B] font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 font-display cursor-pointer"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-[#86868B]" />
+                <span>Change Photo Memory</span>
+              </button>
+            )}
+
+            {isTrial && (
+              <div className="py-2 px-3 bg-amber-50 border border-amber-200/60 rounded-xl text-center">
+                <p className="text-[11px] font-semibold text-amber-800">
+                  1-Session Trial Run in progress
+                </p>
+              </div>
+            )}
 
             <button
               id="btn-pause-main-menu"

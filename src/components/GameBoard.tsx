@@ -29,6 +29,7 @@ import { GameOverModal } from './GameOverModal';
 import { NotificationBadge } from './NotificationBadge';
 import { useNotificationBadge } from '../hooks/useNotificationBadge';
 import { BACKGROUND_THEMES } from '../utils/bgThemes';
+import { markTrialCompleted } from '../utils/config';
 
 interface GameBoardProps {
   photoSrc: string;
@@ -36,6 +37,8 @@ interface GameBoardProps {
   themeConfig: ThemeConfig;
   onChangeMemory: () => void;
   onGoHome: () => void;
+  isTrial?: boolean;
+  onFinishTrial?: () => void;
 }
 
 interface ExplosionParticle {
@@ -116,6 +119,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   themeConfig,
   onChangeMemory,
   onGoHome,
+  isTrial = false,
+  onFinishTrial,
 }) => {
   // 8x8 Board state (null = empty cell)
   const [board, setBoard] = useState<(GridCell | null)[][]>(() =>
@@ -426,6 +431,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       // Delay slightly for natural pacing
       const timer = setTimeout(() => {
         playGameOverSound();
+        if (isTrial) {
+          markTrialCompleted(score);
+        }
         const played = parseInt(localStorage.getItem('gamesPlayed') || '0', 10) + 1;
         localStorage.setItem('gamesPlayed', played.toString());
         window.dispatchEvent(new Event('gamesPlayedUpdated'));
@@ -433,7 +441,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
       }, 600);
       return () => clearTimeout(timer);
     }
-  }, [board, trayPieces, isGameOver, turnsCount]);
+  }, [board, trayPieces, isGameOver, turnsCount, isTrial, score]);
 
   // Pointer / Touch Drag Handler (Ergonomic Block Blast progressive offset & reach)
   const handlePiecePointerDown = (
@@ -661,6 +669,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           )}
         </AnimatePresence>
       </div>
+
+      {/* Trial Run Badge */}
+      {isTrial && (
+        <div className="w-full flex justify-center pt-0.5 -mb-1">
+          <span className="px-3 py-0.5 rounded-full bg-amber-500/20 backdrop-blur-md border border-amber-600/30 text-amber-950 text-[10px] font-black uppercase tracking-widest font-display shadow-xs">
+            1-Session Trial Run
+          </span>
+        </div>
+      )}
 
       {/* TOP HEADER (Section 17 & UI Reference exact layout) */}
       <header className="flex items-center justify-between w-full pt-1 px-2">
@@ -1014,6 +1031,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           onGoHome();
         }}
         onClose={() => setIsPaused(false)}
+        isTrial={isTrial}
       />
 
       {/* GAME OVER MODAL */}
@@ -1023,6 +1041,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({
         bestScore={bestScore}
         isNewBest={isNewBest}
         onPlayAgain={startNewGame}
+        isTrial={isTrial}
+        onFinishTrial={() => {
+          setIsGameOver(false);
+          if (onFinishTrial) {
+            onFinishTrial();
+          }
+        }}
       />
 
       {/* REWARD CARD MODAL */}

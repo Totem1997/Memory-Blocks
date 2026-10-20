@@ -10,6 +10,8 @@ interface GameOverModalProps {
   bestScore: number;
   isNewBest: boolean;
   onPlayAgain: () => void;
+  isTrial?: boolean;
+  onFinishTrial?: () => void;
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
@@ -18,6 +20,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   bestScore,
   isNewBest,
   onPlayAgain,
+  isTrial = false,
+  onFinishTrial,
 }) => {
   const scoreCardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
@@ -139,31 +143,67 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={handleShare}
-              disabled={isSharing}
-              className="w-full py-4 px-6 bg-[#3B82F6] hover:bg-[#2563EB] active:scale-[0.98] disabled:opacity-70 text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
-            >
-              {isSharing ? (
-                <span className="animate-pulse">Capturing...</span>
-              ) : (
-                <>
-                  <Share className="w-5 h-5" />
-                  <span>SHARE SCORE</span>
-                </>
-              )}
-            </button>
+          {isTrial ? (
+            <div className="space-y-3">
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-center">
+                <p className="text-xs font-bold text-amber-900 uppercase tracking-wide font-display mb-1">
+                  Trial Session Expired
+                </p>
+                <p className="text-xs text-amber-800 leading-snug">
+                  Your 1-session trial run has ended. To play unlimited games with any photo, order your custom physical board.
+                </p>
+              </div>
 
-            <button
-              id="btn-game-over-play-again"
-              onClick={onPlayAgain}
-              className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
-            >
-              <RotateCcw className="w-5 h-5 text-[#FDE047]" />
-              <span>CONTINUE PLAYING</span>
-            </button>
-          </div>
+              <button
+                onClick={handleShare}
+                disabled={isSharing}
+                className="w-full py-3.5 px-6 bg-[#3B82F6] hover:bg-[#2563EB] active:scale-[0.98] disabled:opacity-70 text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+              >
+                {isSharing ? (
+                  <span className="animate-pulse">Capturing...</span>
+                ) : (
+                  <>
+                    <Share className="w-4 h-4" />
+                    <span>SHARE TRIAL SCORE</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                id="btn-game-over-finish-trial"
+                onClick={onFinishTrial}
+                className="w-full py-3.5 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+              >
+                <span>FINISH TRIAL</span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <button
+                onClick={handleShare}
+                disabled={isSharing}
+                className="w-full py-4 px-6 bg-[#3B82F6] hover:bg-[#2563EB] active:scale-[0.98] disabled:opacity-70 text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+              >
+                {isSharing ? (
+                  <span className="animate-pulse">Capturing...</span>
+                ) : (
+                  <>
+                    <Share className="w-5 h-5" />
+                    <span>SHARE SCORE</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                id="btn-game-over-play-again"
+                onClick={onPlayAgain}
+                className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-[#000000] active:scale-[0.98] text-white font-bold text-base rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 font-display tracking-wide cursor-pointer"
+              >
+                <RotateCcw className="w-5 h-5 text-[#FDE047]" />
+                <span>CONTINUE PLAYING</span>
+              </button>
+            </div>
+          )}
         </motion.div>
       </div>
     </AnimatePresence>

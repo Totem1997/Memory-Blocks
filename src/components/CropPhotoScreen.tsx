@@ -50,7 +50,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
         y: e.clientY - position.y,
       });
     } else if (activePointers.current.size === 2) {
-      const pts = Array.from(activePointers.current.values());
+      const pts: { x: number; y: number }[] = Array.from(activePointers.current.values());
       const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       initialPinchDist.current = dist;
       initialScale.current = scale;
@@ -68,7 +68,7 @@ export const CropPhotoScreen: React.FC<CropPhotoScreenProps> = ({
         y: e.clientY - dragStart.y,
       });
     } else if (activePointers.current.size === 2) {
-      const pts = Array.from(activePointers.current.values());
+      const pts: { x: number; y: number }[] = Array.from(activePointers.current.values());
       const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       if (initialPinchDist.current) {
         const newScale = Math.max(1, Math.min(initialScale.current * (dist / initialPinchDist.current), 4));
