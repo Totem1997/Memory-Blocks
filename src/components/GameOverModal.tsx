@@ -150,7 +150,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
                   Trial Session Expired
                 </p>
                 <p className="text-xs text-amber-800 leading-snug">
-                  Your 1-session trial run has ended. To play unlimited games with any photo, order your custom physical board.
+                  What you just played is the exact gameplay your friend or loved one will experience, Order the card now and instantly unlock a fully personalized game for them.
                 </p>
               </div>
 

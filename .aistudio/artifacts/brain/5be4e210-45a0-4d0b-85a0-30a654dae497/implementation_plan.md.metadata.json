@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan for adding a 1-session trial run mode activated via a URL parameter (?trial=true). Includes detection, single session tracking, trial-expired messaging, and lock mechanism.",
-  "updatedAt": "2026-10-20T11:18:30.689958478Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Implementation plan for updating the post-game trial expiration messaging in GameOverModal and TrialExpiredScreen to highlight the greeting card gifting experience.",
+  "updatedAt":  "2026-10-21T08:43:35.050968670Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }

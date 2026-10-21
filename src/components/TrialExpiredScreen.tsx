@@ -119,8 +119,8 @@ export const TrialExpiredScreen: React.FC<TrialExpiredScreenProps> = ({ onResetT
           <div className="w-full bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-4 text-left flex items-start gap-3">
             <Sparkles className="w-5 h-5 text-[#16A34A] shrink-0 mt-0.5" />
             <div className="text-xs text-[#166534] leading-relaxed">
-              <p className="font-bold text-[#14532D] mb-0.5">Want unlimited games?</p>
-              Order the custom physical wooden board to play unlimited puzzle runs with any of your favorite memories.
+              <p className="font-bold text-[#14532D] mb-0.5">Want to gift this experience?</p>
+              Give a gift they'll actually play! Imagine their reaction when it's made from their favorite photos! Order the greeting card so they can pick their own favorite memory and play.
             </div>
           </div>
         </div>
