@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan for updating the post-game trial expiration messaging in GameOverModal and TrialExpiredScreen to highlight the greeting card gifting experience.",
-  "updatedAt":  "2026-10-21T08:43:35.050968670Z",
+  "summary":  "Detailed implementation plan for updating trial conclusion copy to 'Trial Ended', justifying paragraph alignment, changing 'card' to 'greeting card', removing redundant phrasing to 'them', and removing the sparkle icon from the gifting callout.",
+  "updatedAt":  "2026-10-22T09:04:04.962567970Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

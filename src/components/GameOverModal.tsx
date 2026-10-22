@@ -145,12 +145,12 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           {/* Action Buttons */}
           {isTrial ? (
             <div className="space-y-3">
-              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-center">
-                <p className="text-xs font-bold text-amber-900 uppercase tracking-wide font-display mb-1">
-                  Trial Session Expired
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl">
+                <p className="text-xs font-bold text-amber-900 uppercase tracking-wide font-display mb-1 text-center">
+                  TRIAL SESSION ENDED
                 </p>
-                <p className="text-xs text-amber-800 leading-snug">
-                  What you just played is the exact gameplay your friend or loved one will experience, Order the card now and instantly unlock a fully personalized game for them.
+                <p className="text-xs text-amber-800 leading-relaxed text-justify">
+                  What you just played is the exact gameplay your friend or loved one will experience. Order the greeting card now and instantly unlock a fully personalized game for them.
                 </p>
               </div>
 

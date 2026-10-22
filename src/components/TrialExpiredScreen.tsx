@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { Share, Sparkles, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Share, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { getTrialScore, resetTrialForTesting } from '../utils/config';
 
@@ -96,7 +96,7 @@ export const TrialExpiredScreen: React.FC<TrialExpiredScreenProps> = ({ onResetT
           </div>
 
           <h2 className="text-3xl font-extrabold text-[#1D1D1F] font-display tracking-tight mb-2">
-            Trial Expired
+            Trial Ended
           </h2>
 
           <p className="text-[#6E6E73] text-sm leading-relaxed mb-6 max-w-xs mx-auto">
@@ -116,8 +116,7 @@ export const TrialExpiredScreen: React.FC<TrialExpiredScreenProps> = ({ onResetT
           )}
 
           {/* Highlight feature callout */}
-          <div className="w-full bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-4 text-left flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-[#16A34A] shrink-0 mt-0.5" />
+          <div className="w-full bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-4 text-left">
             <div className="text-xs text-[#166534] leading-relaxed">
               <p className="font-bold text-[#14532D] mb-0.5">Want to gift this experience?</p>
               Give a gift they'll actually play! Imagine their reaction when it's made from their favorite photos! Order the greeting card so they can pick their own favorite memory and play.
